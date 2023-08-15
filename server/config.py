@@ -15,8 +15,12 @@ app.json.compact = False
 
 metadata = MetaData(naming_convention={
     "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+    "uq": "uq_%(table_name)s_%(column_0_name)s",
+    "ck": "ck_%(table_name)s_%(constraint_name)s",
+    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
 })
 db = SQLAlchemy(metadata=metadata)
+CORS( app )
 migrate = Migrate(app, db)
 db.init_app(app)
 
@@ -25,4 +29,4 @@ bcrypt = Bcrypt(app)
 api = Api(app)
 
 
-CORS(app)
+app.secret_key = 'z\x94$\xd8\xf7&\x1b^\xc4\xf4[\xe5%\x9d)\xe0'
