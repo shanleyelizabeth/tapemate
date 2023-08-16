@@ -24,6 +24,8 @@ CORS( app )
 migrate = Migrate(app, db)
 db.init_app(app)
 
+upload_folder = 'static/user_images'
+allowed_extensions = {'png', 'jpg', 'jpeg'}
 
 bcrypt = Bcrypt(app)
 api = Api(app)
