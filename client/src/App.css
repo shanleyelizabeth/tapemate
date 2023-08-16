@@ -2,7 +2,45 @@
   text-align: center;
 }
 
-.App-logo {
+.error-message {
+  color: red;
+  border: 1px solid red;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+}
+
+.profile-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+}
+
+.profile-image img {
+  display: block;
+  width: 100%; 
+  height: auto;
+  position: absolute;
+  top: 0; 
+}
+
+.right-nav {
+  display: flex
+
+}
+
+.new-request-link {
+  color: white;
+}
+
+.header {
+  background-color: transparent;
+  color: black
+}
+
+/* .App-logo {
   height: 40vmin;
   pointer-events: none;
 }
@@ -35,4 +73,4 @@
   to {
     transform: rotate(360deg);
   }
-}
+} */
