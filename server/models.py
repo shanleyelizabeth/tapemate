@@ -44,7 +44,9 @@ class Request(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     actor_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     reader_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
-    date_time = db.Column(db.DateTime)
+    date = db.Column(db.Date, nullable= False)
+    start_time=db.Column(db.Time, nullable=False)
+    end_time=db.Column(db.Time, nullable = False)
     notes = db.Column(db.String)
     STATUS_OPEN = 'open'
     STATUS_ACCEPTED = 'accepted'
@@ -60,6 +62,20 @@ class Request(db.Model, SerializerMixin):
     actor = db.relationship('User', back_populates='actor_requests', foreign_keys=actor_id)
     reader = db.relationship('User', back_populates='reader_requests', foreign_keys=reader_id)
     sessions = db.relationship('Session', backref='request')
+
+    def to_custom_dict(self):
+        return {
+            'id': self.id,
+            'actor_id': self.actor_id,
+            'notes': self.notes,
+            'date': self.date.strftime('%Y-%m-%d'),  
+            'start_time': self.start_time.strftime('%H:%M:%S'),
+            'end_time': self.end_time.strftime('%H:%M:%S'),
+            'status': self.status,
+            'session_type': self.session_type,
+            'actor_username': self.actor.username if self.actor else None,
+            'actor_profile_image': self.actor.profile_image if self.actor else None
+        }
 
 
     @validates('session_type')

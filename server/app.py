@@ -21,7 +21,7 @@ def index():
 
 class Requests(Resource):
     def get(self):
-        requests = [r.to_dict() for r in Request.query.all()]
+        requests = [r.to_custom_dict() for r in Request.query.all()]
         return make_response( requests, 200)
     
     def post(self):
