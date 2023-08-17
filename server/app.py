@@ -25,6 +25,7 @@ class Requests(Resource):
         return make_response( requests, 200)
     
     def post(self):
+        print(request.json)
         data = request.get_json()
         
         actor_id = session.get("user_id", None)
@@ -37,19 +38,26 @@ class Requests(Resource):
         if not session_type:
             return make_response({'error' : 'Session type is required'}, 400)
         
-        date_time_str = data['date_time']
-        date_time_obj = datetime.strptime(date_time_str, "%Y-%m-%dT%H:%M:%SZ")
+        date_str = data['date']
+        start_time_str = data['start_time']
+        end_time_str = data['end_time']
+
+        date_obj = datetime.strptime(date_str, "%B %d, %Y").date()
+        start_time_obj = datetime.strptime(start_time_str, "%H:%M").time()
+        end_time_obj = datetime.strptime(end_time_str, "%H:%M").time()
 
         try:
             new_request = Request(
                 actor_id=session['user_id'],
                 notes=data.get('notes', None),
-                date_time=date_time_obj,
+                date=date_obj,
+                start_time=start_time_obj,
+                end_time=end_time_obj,
                 session_type=data['session_type']
             )
             db.session.add(new_request)
             db.session.commit()
-            return make_response(new_request.to_dict(only=('actor_id', 'notes', 'date_time', 'session_type')), 201)
+            return make_response(new_request.to_dict(only=('actor_id', 'notes', 'date', 'start_time', 'end_time', 'session_type')), 201)
         except Exception as e:
             return make_response({"error" : str(e)}, 500)
 
