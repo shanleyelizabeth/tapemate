@@ -143,6 +143,11 @@ def signup():
     except ValueError as e:
         return make_response({"error": [e]}, 400)
     
+@app.route('/logout', methods=["DELETE"])
+def logout():
+    del session['user_id']
+    return make_response({"message": "logout successful"}, 204)
+    
 api.add_resource(UserById,'/users/<int:id>')
 api.add_resource(Requests, '/requests')
 

@@ -14,12 +14,22 @@ function RequestForm(){
     const [sessionType, setSessionType] = useState("");
     const [show, setShow] = useState(false)
     const [error, setError] = useState(null);
+    const [modalMessage, setModalMessage] = useState("");
+    const [sessionTypeError, setSessionTypeError] = useState(null);
 
+    const currentDate = new Date();
+
+    const isTimeInFuture = (time) => {
+        if (selectedDate.getDate() === currentDate.getDate() &&
+            selectedDate.getMonth() === currentDate.getMonth() &&
+            selectedDate.getFullYear() === currentDate.getFullYear()) {
+            return time.getTime() > currentDate.getTime();
+        }
+        return true;
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault()
-
-
 
         const formData = {
             date: selectedDate.toLocaleDateString("en-US", {month: 'long', day: '2-digit', year: 'numeric'}),
@@ -35,17 +45,29 @@ function RequestForm(){
             body: JSON.stringify(formData)
         })
         .then(r => {
-            if (r.ok) {
+            const rOk = r.ok
+            return r.json().then(data => ({...data, rOk}))
+        })
+        .then(({rOk, ...data}) => {
+            if (rOk) {
+                setModalMessage(`You have made a request for a reader on ${formatDateTimeInformation(selectedDate, startTime, endTime)}.`);
+                setSelectedDate(new Date())
+                setStartTime(new Date())
+                setEndTime(new Date())
+                setNotes("")
+                setSessionType("")
                 setShow(true)
+
             } else {
-                return r.json().then(err => {
-                    throw new Error(err.error)
-                })
+                if (data.error === 'Session type is required'){
+                    setSessionTypeError(data.error)
+                } else {
+                    setError(data.error || "An unexpected error occured.")
+                }
             }
-            return r.json()
         })
         .catch(error => {
-            setError(error.message)
+            setError("An unexpected error occurred.")
         })
     }
 
@@ -56,8 +78,6 @@ function RequestForm(){
         combinedDateTime.setSeconds(0); 
         return combinedDateTime;
     };
-
-
 
     const formatDateTimeInformation = () => {
 
@@ -71,7 +91,6 @@ function RequestForm(){
         const durationMinutes = (combinedEndTime - combinedStartTime) / (1000 * 60)
         let durationString
         
-
         if(durationMinutes >= 60) {
             const hours =Math.floor(durationMinutes / 60)
             const minutes = durationMinutes % 60
@@ -92,6 +111,7 @@ function RequestForm(){
                             selected={selectedDate}
                             onChange={date => setSelectedDate(date)}
                             dateFormat="MMMM d, yyyy"
+                            minDate={currentDate}
                         />
                     </Col>
                 </Form.Group>
@@ -107,6 +127,7 @@ function RequestForm(){
                             timeIntervals={15}
                             timeCaption="Start Time"
                             dateFormat="h:mm aa"
+                            filterTime={isTimeInFuture}
                         />
                     </Col>
                 </Form.Group>
@@ -122,6 +143,9 @@ function RequestForm(){
                             timeIntervals={15}
                             timeCaption="End Time"
                             dateFormat="h:mm aa"
+                            minDate={selectedDate}
+                            maxDate={selectedDate}
+                            filterTime={isTimeInFuture}
                         />
                     </Col>
                 </Form.Group>
@@ -131,6 +155,7 @@ function RequestForm(){
                         <Form.Label as="legend" column sm={2}>
                             Session Type
                         </Form.Label>
+                        {sessionTypeError && <div className="error-message">{sessionTypeError}</div>}
                         <Col sm={10}>
                             <Form.Check
                                 type="radio"
@@ -181,7 +206,7 @@ function RequestForm(){
                     <Modal.Title>Request Submitted</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    You have made a request for a reader on {formatDateTimeInformation(selectedDate, startTime, endTime)}. 
+                    {modalMessage}
                     
                 </Modal.Body>
                 <Modal.Footer>

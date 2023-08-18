@@ -42,7 +42,15 @@ function Header({navigate}){
 
 
     const handleLogout = () => {
-        console.log(user)
+        fetch('/logout', {
+            method: "DELETE"
+        })
+        .then(r => {
+            if(r.ok) {
+                setUser(null)
+                navigate('/')
+            }
+        })
     }
 
 
