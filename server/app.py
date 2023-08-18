@@ -77,15 +77,22 @@ class UserById(Resource):
         if not user:
             return make_response({'error': 'User not found'}, 400)
             
-        data=request.get_json()
+        
 
         for attr in ['username', 'location']:
-            if attr in data:
-                setattr(user, attr, data[attr])
+            if attr in request.form:
+                setattr(user, attr, request.form[attr])
 
-        if 'password' in data:
-            user.password_hash = data['password']
+        if 'password' in request.form:
+            user.password_hash = request.form['password']
 
+        if 'profile_image' in request.files:
+            file = request.files['profile_image']
+            if file:
+                filename = secure_filename(file.filename)
+                filepath = os.path.join(upload_folder, filename)
+                file.save(filepath)
+                user.profile_image = filepath
 
         db.session.commit()
         return make_response(user.to_dict(only=('username', 'id', 'profile_image', 'location')), 200)
@@ -94,7 +101,7 @@ class UserById(Resource):
 def authorized():
     try:
         user = User.query.filter_by(id=session.get("user_id")).first()
-        return make_response( user.to_dict(only=('username','id', 'profile_image')), 200)
+        return make_response( user.to_dict(only=('username','id', 'profile_image', 'location')), 200)
     except:
         return make_response({"error": "Please log in or sign up"}, 401)
 
@@ -107,7 +114,7 @@ def login():
     if user.authenticate(data["password"]):
         session["user_id"] = user.id
         print(session["user_id"])
-        return make_response(user.to_dict(only=('username', 'id', 'profile_image'))), 201
+        return make_response(user.to_dict(only=('username', 'id', 'profile_image', 'location'))), 201
     else:
         return make_response({"error": "Incorrect password"}, 400)
     
