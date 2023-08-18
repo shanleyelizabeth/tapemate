@@ -74,7 +74,8 @@ class Request(db.Model, SerializerMixin):
             'status': self.status,
             'session_type': self.session_type,
             'actor_username': self.actor.username if self.actor else None,
-            'actor_profile_image': self.actor.profile_image if self.actor else None
+            'actor_profile_image': self.actor.profile_image if self.actor else None,
+            'actor_location': self.actor.location if self.actor else None
         }
 
 

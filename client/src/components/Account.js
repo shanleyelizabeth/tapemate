@@ -59,7 +59,12 @@ function Account({navigate}){
     const handleDelete = () => {
         fetch(`/users/${user.id}`, {
             method: "DELETE" })
-            .then(navigate('/'))
+            .then( r => {
+                if(r.ok) {
+                    setUser(null)
+                    navigate('/')
+                }
+            })
     }
 
     return (

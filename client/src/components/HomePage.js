@@ -20,9 +20,12 @@ const openRequestCards = requests
                             key={request.id}
                             actor={request.actor_username}
                             actor_image={request.actor_profile_image}
-                            date_time={request.date_time}
+                            date={request.date}
+                            start_time={request.start_time}
+                            end_time={request.end_time}
                             session_type = {request.session_type}
                             notes={request.notes}
+                            actor_location={request.actor_location}
                     />
 })
 
