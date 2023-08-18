@@ -2,8 +2,8 @@ import {Button, Image, Col, Row, Form} from 'react-bootstrap'
 import {useState, useEffect, useContext, useRef} from "react"
 import {UserContext} from "../UserProvider"
 
-function Account(){
-    const {user} = useContext(UserContext)
+function Account({navigate}){
+    const {user, setUser} = useContext(UserContext)
     const [editMode, setEditMode] = useState(false)
     const [updatePassword, setUpdatePassword] = useState(false)
     const [updateUsername, setUpdateUsername] = useState(false)
@@ -12,7 +12,12 @@ function Account(){
     const [location, setLocation] = useState(user?.location)
     const [password, setPassword] = useState(''); 
     const [profileImage, setProfileImage] = useState(null)
-    const fileInputRef = useRef(null);
+    const fileInputRef = useRef(null)
+
+    useEffect(() => {
+        setUsername(user?.username || "");
+        setLocation(user?.location || "");
+    }, [user])
 
     const handleUpdate = () => {
         const formData = new FormData()
@@ -43,6 +48,7 @@ function Account(){
             if (data.profile_image){
                 setProfileImage(data.profile_image)
             }
+            setUser(data)
             setEditMode(false)
         })
         .catch(error => {
@@ -51,7 +57,9 @@ function Account(){
     }
 
     const handleDelete = () => {
-        console.log('hi')
+        fetch(`/users/${user.id}`, {
+            method: "DELETE" })
+            .then(navigate('/'))
     }
 
     return (
@@ -78,39 +86,20 @@ function Account(){
                     {editMode ? (
                         <Form>
                             <Form.Group>
-                                {updateUsername ? (
-                                    <>
-                                        <Form.Label>New Username:</Form.Label>
-                                        <Form.Control type="text" value={username} onChange={e => setUsername(e.target.value)}/>
-                                        <Button onClick ={() => setUpdateUsername(!updateUsername)}variant="outline-secondary" size="sm" className="mt-2">Update Username</Button>
-                                    </>) : 
-                                        <Button onClick ={() => setUpdateUsername(true)}variant="outline-secondary" size="sm" className="mt-2">Update Username</Button>
-                                }
+                                <Form.Label>Update Username:</Form.Label>
+                                <Form.Control type="text" value={username} onChange={e => setUsername(e.target.value)}/>
                             </Form.Group>
                                 
                             <Form.Group>
-                            {updateLocation ? (
-                                    <>
-                                        <Form.Label>New location:</Form.Label>
-                                        <Form.Control type="text" value={location} onChange={e => setLocation(e.target.value)}/>
-                                        <Button onClick ={() => setUpdateLocation(!updateLocation)}variant="outline-secondary" size="sm" className="mt-2">Update Location</Button>
-                                    </>) : 
-                                        <Button onClick ={() => setUpdateLocation(true)}variant="outline-secondary" size="sm" className="mt-2">Update Location</Button>
-                                }
-                                
+                                <Form.Label>Update Location:</Form.Label>
+                                <Form.Control type="text" value={location} onChange={e => setLocation(e.target.value)}/>
+
                             </Form.Group>
                             <Form.Group>
-                                {updatePassword ? (
-                                    <>
-                                        <Form.Label>New Password</Form.Label>
-                                        <Form.Control type="text" value={password} onChange={e => setPassword(e.target.value)}/>
-                                        <Button onClick ={() => setUpdatePassword(!updatePassword)} variant="outline-secondary" size="sm" className="mt-2">Update Password</Button>
-                                    </>) : 
-                                    <Button onClick ={() => setUpdatePassword(true)}variant="outline-secondary" size="sm" className="mt-2">Update Password</Button>
-                                }
+                                <Form.Label>Update Password:</Form.Label>
+                                <Form.Control type="text" value={password} onChange={e => setPassword(e.target.value)}/>
                             </Form.Group>
-                            <Button onClick={() => handleDelete()} variant="outline-secondary" size="sm" className="mt-2">Delete Account</Button>
-                            
+                            <Button onClick={handleDelete} variant="outline-secondary" size="sm" className="mt-2">Delete Account</Button>
                         </Form>
                     ) : (
                         <div>
