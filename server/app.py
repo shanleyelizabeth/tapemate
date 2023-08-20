@@ -25,7 +25,7 @@ class Requests(Resource):
         return make_response( requests, 200)
     
     def post(self):
-        print(request.json)
+
         data = request.get_json()
         
         actor_id = session.get("user_id", None)
@@ -60,6 +60,47 @@ class Requests(Resource):
             return make_response(new_request.to_dict(only=('actor_id', 'notes', 'date', 'start_time', 'end_time', 'session_type')), 201)
         except Exception as e:
             return make_response({"error" : str(e)}, 500)
+
+class Sessions(Resource):
+    def get(self):
+        sessions = [s.to_dict(only = ('actor_id', 'reader_id', 'date', 'start_time', 'end_time', 'notes', 'status')) for s in Session.query.all()]
+        return make_response(sessions, 200)
+    
+    def post(self):
+        data = request.get_json()
+
+        date_str = data.get('date')
+        start_time_str = data.get('start_time')
+        end_time_str = data.get('end_time')
+        
+
+        date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
+        start_time_obj = datetime.strptime(start_time_str, "%H:%M:%S").time()
+        end_time_obj = datetime.strptime(end_time_str, "%H:%M:%S").time()
+
+
+        try:
+            request_id = data.get('request_id')
+            request_to_update = Request.query.filter_by(id=request_id).first()
+            if not request_to_update:
+                return make_response({"error": "Request not found"})
+            request_to_update.status = 'Accepted'
+
+            new_session = Session(
+                actor_id = data.get('actor_id'),
+                reader_id = data.get('reader_id'),
+                date = date_obj,
+                start_time = start_time_obj,
+                end_time = end_time_obj,
+                notes = data.get('notes')
+            )
+            db.session.add(new_session)
+            db.session.commit()
+            return make_response(new_session.to_dict(only=('actor_id', 'reader_id', 'date', 'start_time', 'end_time', 'notes', 'status')))
+        except Exception as e:
+            db.session.rollback()
+            return make_response({"error" : str(e)}, 500)
+
 
 
 
@@ -157,6 +198,7 @@ def logout():
     
 api.add_resource(UserById,'/users/<int:id>')
 api.add_resource(Requests, '/requests')
+api.add_resource(Sessions, '/sessions')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

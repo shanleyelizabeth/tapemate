@@ -99,7 +99,9 @@ class Session(db.Model, SerializerMixin):
     request_id = db.Column(db.Integer, db.ForeignKey('requests.id'))
     actor_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     reader_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    date_time = db.Column(db.DateTime)
+    date = db.Column(db.Date, nullable = False)
+    start_time = db.Column(db.Time)
+    end_time = db.Column(db.Time)
     notes = db.Column(db.String)
     STATUS_SCHEDULED = 'scheduled'
     STATUS_COMPLETED = 'completed'

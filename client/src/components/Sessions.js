@@ -1,4 +1,9 @@
-function Sessions(){
+
+
+
+function Sessions({navigate}){
+
+
     return (
         <div>
 

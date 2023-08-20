@@ -38,7 +38,7 @@ function App() {
             <Route path='/' element={<Authentication navigate={navigate}/>}/>
             <Route path='home' element={<HomePage />}/>
             <Route path='account' element={<Account navigate={navigate}/>}/>
-            <Route path='sessions' element={<Sessions />}/>
+            <Route path='sessions' element={<Sessions navigate={navigate}/>}/>
             <Route path='request-form' element={<RequestForm/>}/>
           </Routes>
         <Footer />
