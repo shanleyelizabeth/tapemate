@@ -2,18 +2,18 @@ import { Card, Button } from 'react-bootstrap';
 import {useContext, useState} from 'react'
 import {UserContext} from '../UserProvider'
 
-function RequestCard({ removeRequest, request_id, actor, actor_image, date, start_time, end_time, notes, session_type, actor_location}){
+function RequestCard({ removeRequest, actor_id, request_id, actor, actor_image, date, start_time, end_time, notes, session_type, actor_location}){
     const {user} = useContext(UserContext)
     const [error, setError] = useState(null)
     const formattedDate = formatDate(date);
     const formattedTime = formatTime(start_time, end_time)
 
-    console.log(end_time)
+
 
     const handleAccept = () => {
         const sessionData = {
             request_id: request_id,
-            actor_id: actor,
+            actor_id: actor_id,
             reader_id: user.id,
             date: date,
             start_time: start_time,

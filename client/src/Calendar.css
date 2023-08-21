@@ -1,0 +1,56 @@
+.sessions-container {
+    display: flex;
+    height: 100vh; 
+    margin:30px;
+    width: 100%
+}
+.calendar-container{
+    flex: 2 !important;
+    flex-shrink: 0 !important;
+    min-width:50% !important;
+    width: 50% !important;
+
+}
+
+
+.info-container {
+    flex: 1;
+
+}
+
+.fc {
+    font-size: .75em !important;
+    width: 75% !important; 
+    margin: 0 auto !important; 
+    height: 60%;
+    border-radius: 10px;
+}
+
+a {
+    --bs-link-color-rgb: 128, 128, 128;  
+    --bs-link-opacity: 1;
+
+}
+
+.fc-col-header {
+    background-color: #F3F4F6;
+    font-weight: bold;
+}
+
+.fc-event {
+    background-color: #34C759;
+    border: none;
+    color: white;
+    font-weight: bold;
+}
+
+.fc-day-today {
+    background-color: rgba(0, 122, 255, 0.1);
+}
+
+:root {
+    --fc-today-bg-color: aliceblue
+
+    
+}
+

@@ -127,5 +127,26 @@ class Session(db.Model, SerializerMixin):
     actor = db.relationship('User', back_populates='actor_sessions', foreign_keys=actor_id)
     reader = db.relationship('User', back_populates='reader_sessions', foreign_keys=reader_id)
 
+    def to_custom_dict(self):
+        return {
+            'id': self.id,
+            'actor_id': self.actor_id,
+            'reader_id': self.reader_id,
+            'date': self.date.strftime('%Y-%m-%d'),
+            'start_time': self.start_time.strftime('%H:%M:%S'),
+            'end_time': self.end_time.strftime('%H:%M:%S'),
+            'status': self.status,
+            'actor': {
+                'username': self.actor.username if self.actor else None,
+                'profile_image': self.actor.profile_image if self.actor else None,
+                'location': self.actor.location if self.actor else None
+            },
+            'reader': {
+                'username': self.reader.username if self.reader else None,
+                'profile_image': self.reader.profile_image if self.reader else None,
+                'location': self.reader.location if self.reader else None
+            }
+        }
+
     def __repr__(self):
         return f'Session(ID: {self.id}, Actor ID: {self.actor_id}, Reader ID: {self.reader_id}, Status: {self.status})'

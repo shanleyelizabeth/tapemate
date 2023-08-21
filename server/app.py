@@ -63,7 +63,7 @@ class Requests(Resource):
 
 class Sessions(Resource):
     def get(self):
-        sessions = [s.to_dict(only = ('actor_id', 'reader_id', 'date', 'start_time', 'end_time', 'notes', 'status')) for s in Session.query.all()]
+        sessions = [s.to_custom_dict() for s in Session.query.all()]
         return make_response(sessions, 200)
     
     def post(self):

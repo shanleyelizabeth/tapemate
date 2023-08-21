@@ -25,6 +25,7 @@ const openRequestCards = requests
                             key={request.id}
                             request_id={request.id}
                             actor={request.actor_username}
+                            actor_id={request.actor_id}
                             actor_image={request.actor_profile_image}
                             date={request.date}
                             start_time={request.start_time}
