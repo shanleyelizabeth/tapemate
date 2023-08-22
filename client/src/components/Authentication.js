@@ -14,14 +14,14 @@ function Authentication({navigate}){
         e.preventDefault()
         const route = isLogin === 1 ? "login" : "signup"
 
-        let requestBody;
-        let contentType;
+        let requestBody
+        let contentType
 
         if(isLogin === 1){
-            requestBody = JSON.stringify(formData);
+            requestBody = JSON.stringify(formData)
             contentType = "application/json"
         } else {
-            const formdata = new FormData();
+            const formdata = new FormData()
             formdata.append('username', formData.username)
             formdata.append('password', formData.password)
             if (formData.image){

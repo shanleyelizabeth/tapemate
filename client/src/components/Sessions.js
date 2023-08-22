@@ -24,7 +24,7 @@ function Sessions({navigate}){
         fetch('/sessions')
         .then(r => r.json())
         .then((sessions) => {
-            const filteredSessions = sessions .filter((session) => session.actor_id === user?.id || session.reader_id === user?.id)
+            const filteredSessions = sessions.filter((session) => session.actor_id === user?.id || session.reader_id === user?.id)
 
             const calendarData = filteredSessions.map((session) => ({
                 title: session.actor_id === user?.id ? 
@@ -32,8 +32,10 @@ function Sessions({navigate}){
                     `Reading session for ${session.actor.username}`,
                 start: new Date(session.date + 'T' + session.start_time),
                 end: new Date(session.date + 'T' + session.end_time),
-                notes: session.notes,
-                photo: session.actor.profile_image,
+                extendedProps: {
+                    notes: session.notes,
+                    photo: session.actor.profile_image,
+                },
                 color: session.actor_id === user?.id ? 'green' : 'blue'
             }))
             setSessions(calendarData)
@@ -68,8 +70,8 @@ function Sessions({navigate}){
                         <h2 className="info-header">{selectedInfo.title}</h2>
                         <p>{selectedInfo.startStr}</p>
                         <p>{selectedInfo.endStr}</p>
-                        <p>{selectedInfo.notes}</p>
-                        <p>{selectedInfo.photo}</p>
+                        <p>{selectedInfo.extendedProps.notes}</p>
+                        <img style ={{width: '75px', height: '100px'}}src={selectedInfo.extendedProps.photo}/>
                         </div>
                 ) : 
                 (<p>Click on an event to see the details</p>

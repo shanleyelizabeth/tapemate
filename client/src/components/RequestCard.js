@@ -1,6 +1,7 @@
 import { Card, Button } from 'react-bootstrap';
 import {useContext, useState} from 'react'
 import {UserContext} from '../UserProvider'
+import "../Card.css"
 
 function RequestCard({ removeRequest, actor_id, request_id, actor, actor_image, date, start_time, end_time, notes, session_type, actor_location}){
     const {user} = useContext(UserContext)
@@ -65,11 +66,14 @@ function RequestCard({ removeRequest, actor_id, request_id, actor, actor_image, 
     }
 
     function formatTime (startTime, endTime) {
-        let [startHour, startMinutes] = startTime.split(":").map(Number);
-        let [endHour, endMinutes] = endTime.split(":").map(Number);
+        let [startHour, startMinutes] = startTime.split(":").map(Number)
+        let [endHour, endMinutes] = endTime.split(":").map(Number)
+
+        startMinutes = String(startMinutes).padStart(2, '0')
+        endMinutes = String(endMinutes).padStart(2,'0')
         
         let durationHours = endHour - startHour;
-        let durationMinutes = endMinutes - startMinutes;
+        let durationMinutes = endMinutes - startMinutes
 
         let durationStr = ""
         if (durationHours > 0) {
@@ -88,7 +92,7 @@ function RequestCard({ removeRequest, actor_id, request_id, actor, actor_image, 
             }
         }
         
-        let isPM = startHour >= 12;
+        let isPM = startHour >= 12
         let displayHour = startHour % 12
         displayHour = displayHour === 0 ? 12 : displayHour
 
@@ -100,19 +104,21 @@ function RequestCard({ removeRequest, actor_id, request_id, actor, actor_image, 
     return (
         <>
         {error && <div className="error">{error}</div>}
-            <Card style={{ width: '18rem' }}>
-                <Card.Body>
-                    <Card.Title>Reader Request from {actor} ({actor_location})</Card.Title>
-                    <Card.Img src={actor_image} />
-                    <Card.Subtitle className="mb-2 text-muted">{session_type}</Card.Subtitle>
-                    <Card.Text>
-                        On: {formattedDate}
-                        At: {formattedTime}
-                    </Card.Text>
-                    <Card.Subtitle className="mb-2 text-muted">{notes}</Card.Subtitle>
-                    <Button onClick={handleAccept} variant="primary">Accept Request</Button>
-                </Card.Body>
-            </Card>
+            <div className="card-container mb-4">
+                <Card style={{ width: '18rem' }}>
+                    <Card.Body>
+                        <Card.Title>Reader Request from {actor} ({actor_location})</Card.Title>
+                        <Card.Img src={actor_image} className="img-fluid" style={{maxWidth: '30%', margin: '0 auto'}}/>
+                        <Card.Subtitle className="mb-2 text-muted">{session_type}</Card.Subtitle>
+                        <Card.Text>
+                            On: {formattedDate}
+                            At: {formattedTime}
+                        </Card.Text>
+                        <Card.Subtitle className="mb-2 text-muted">{notes}</Card.Subtitle>
+                        <Button onClick={handleAccept} variant="primary">Accept Request</Button>
+                    </Card.Body>
+                </Card>
+            </div>
         </>
     )
 }

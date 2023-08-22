@@ -6,8 +6,7 @@ function Account({navigate}){
     const {user, setUser} = useContext(UserContext)
     const [editMode, setEditMode] = useState(false)
     const [updatePassword, setUpdatePassword] = useState(false)
-    const [updateUsername, setUpdateUsername] = useState(false)
-    const [updateLocation, setUpdateLocation] = useState(false)
+
     const [username, setUsername] = useState(user?.username)
     const [location, setLocation] = useState(user?.location)
     const [password, setPassword] = useState(''); 

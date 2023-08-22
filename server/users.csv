@@ -1,0 +1,12 @@
+User Name, Password, Location, Image Path
+Spencer,password,"Nashville, TN", http://localhost:5555/static/user_images/SpencerLocke.jpg
+Kelsey,password,"Brooklyn, NY", http://localhost:5555/static/user_images/kelsey.jpeg
+Shanley,password,"Brooklyn, NY", http://localhost:5555/static/user_images/shanley.jpg
+Abraham,password,"New York, NY", http://localhost:5555/static/user_images/AbrahamLim.jpg
+Logan,password,"Los Angeles, CA", http://localhost:5555/static/user_images/LoganClark.jpg
+Ash,password,"Salt Lake City, UT", http://localhost:5555/static/user_images/AshSantos.jpg
+Catherine,password,"Brooklyn, NY", http://localhost:5555/static/user_images/CatherineBeckett.jpeg
+Emma,password,"Los Angeles, CA", http://localhost:5555/static/user_images/EmmaGonzalez.jpg
+Savannah,password,"Brooklyn, NY", http://localhost:5555/static/user_images/Savannah.jpg
+Natalee,password,"Los Angeles, CA", http://localhost:5555/static/user_images/Natalee.jpg
+Olivia,password,"New York, NY", http://localhost:5555/static/user_images/Olivia.jpg
