@@ -23,8 +23,8 @@
 }
 
 .calendar-container button:hover{
-    background-color: white;
-    color:black
+    background-color: #526477;
+    border-color: #526477;
 }
 
 .info-container {
@@ -32,6 +32,17 @@
     margin-right: 50px;
     margin-top: 2rem;
 }
+
+.info-container .card{
+    height: 400px;
+    overflow-y: auto;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    height: 400px;
+}
+    
+
 
 .fc {
     font-size: .65em !important;

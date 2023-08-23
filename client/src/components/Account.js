@@ -67,10 +67,10 @@ function Account({navigate}){
     }
 
     return (
-        <div>
+        <div className="account-page">
             <Row>
                 <Col xs={4}>
-                    <Image src={user?.profile_image} fluid rounded thumbnail/>
+                    <Image src={user?.profile_image} fluid rounded style={{height: '350px'}}/>
                     {editMode && <Button 
                                     variant="outline-secondary" 
                                     size="sm" 
@@ -106,15 +106,18 @@ function Account({navigate}){
                             <Button onClick={handleDelete} variant="outline-secondary" size="sm" className="mt-2">Delete Account</Button>
                         </Form>
                     ) : (
-                        <div>
-                            <h5>Username: {user?.username}</h5>
-                            <p>Location: {user?.location}</p>
-                        </div>
+                        <Col xs={4}>
+                            <div className="account-info">
+                                <h5>Username: {user?.username}</h5>
+                                <h5>Location: {user?.location}</h5>
+                            </div>
+                        </Col>
                     )}
                 </Col>
 
                 <Col xs={4} className="d-flex justify-content-end align-items-start">
                 <Button 
+                className="edit-button"
                     variant="outline-primary" 
                     onClick={() => {
                         setEditMode(!editMode) 

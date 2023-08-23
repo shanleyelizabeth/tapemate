@@ -107,14 +107,16 @@ function RequestCard({ removeRequest, actor_id, request_id, actor, actor_image, 
             <div className="card-container mb-4">
                 <Card style={{ width: '18rem' }}>
                     <Card.Body>
-                        <Card.Title>Reader Request from {actor} ({actor_location})</Card.Title>
-                        <Card.Img src={actor_image} className="img-fluid" style={{maxWidth: '30%', margin: '0 auto'}}/>
-                        <Card.Subtitle className="mb-2 text-muted">{session_type}</Card.Subtitle>
-                        <Card.Text>
-                            On: {formattedDate}
-                            At: {formattedTime}
-                        </Card.Text>
-                        <Card.Subtitle className="mb-2 text-muted">{notes}</Card.Subtitle>
+                        <div className="card-content">
+                            <Card.Title>Reader Request from {actor} ({actor_location})</Card.Title>
+                            <Card.Img src={actor_image} className="img-fluid" style={{maxWidth: '30%', margin: '0 auto'}}/>
+                            <Card.Subtitle className="mb-2 text-muted">{session_type}</Card.Subtitle>
+                            <Card.Text>
+                                On: {formattedDate}
+                                At: {formattedTime}
+                            </Card.Text>
+                            <Card.Subtitle className="mb-2 text-muted">{notes}</Card.Subtitle>
+                        </div>
                         <Button onClick={handleAccept} variant="primary">Accept Request</Button>
                     </Card.Body>
                 </Card>
