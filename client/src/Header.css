@@ -28,7 +28,7 @@
 
 .right-nav button {
     margin-right: 20px;
-    background-color: #526477;
+    background-color: rgba(15, 14, 14, 0.844);
     border-color: #526477;
 }
 
@@ -73,6 +73,10 @@
 }
 .nav-bar-link.active-link {
     opacity: 1;
+}
+
+.dropdown-menu {
+    background-color: #eeece8 !important;
 }
 
 

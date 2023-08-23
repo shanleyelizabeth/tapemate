@@ -91,7 +91,7 @@ function Header({navigate}){
                 </Button>
                 <Dropdown>
                     <Dropdown.Toggle as={CustomToggle}/>
-                    <Dropdown.Menu align="end">
+                    <Dropdown.Menu className="dropdown-menu" align="end">
                         <Dropdown.Item href="/account">Account</Dropdown.Item>
                         <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
                     </Dropdown.Menu>

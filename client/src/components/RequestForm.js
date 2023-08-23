@@ -1,8 +1,8 @@
-import {Form, Button, Col, Row, Modal} from 'react-bootstrap';
+import {Form, Button, Col, Row, Modal, Card} from 'react-bootstrap';
 import {useState, useEffect, useContext} from "react"
-
 import DatePicker from "react-datepicker"
 import 'react-datepicker/dist/react-datepicker.css'
+import "../Form.css"
 
 
 
@@ -102,105 +102,109 @@ function RequestForm(){
     }
 
     return (
-        <div>
-            <Form onSubmit={handleSubmit}>
-                <Form.Group as ={Row}>
-                    <Form.Label column sm='2'>Select Date:</Form.Label>
-                    <Col sm="10">
-                        <DatePicker
-                            selected={selectedDate}
-                            onChange={date => setSelectedDate(date)}
-                            dateFormat="MMMM d, yyyy"
-                            minDate={currentDate}
-                        />
-                    </Col>
-                </Form.Group>
+        <div className="form-container">
+            <Card>
+                <Card.Body>
+                    <Form onSubmit={handleSubmit}>
+                        <Form.Group as ={Row}>
+                            <Form.Label column sm='2'>Select Date:</Form.Label>
+                            <Col sm="10">
+                                <DatePicker
+                                    selected={selectedDate}
+                                    onChange={date => setSelectedDate(date)}
+                                    dateFormat="MMMM d, yyyy"
+                                    minDate={currentDate}
+                                />
+                            </Col>
+                        </Form.Group>
 
-                <Form.Group as={Row}>
-                    <Form.Label column sm="2">Start Time:</Form.Label>
-                    <Col sm="10">
-                        <DatePicker
-                            selected={startTime}
-                            onChange={time => setStartTime(time)}
-                            showTimeSelect
-                            showTimeSelectOnly
-                            timeIntervals={15}
-                            timeCaption="Start Time"
-                            dateFormat="h:mm aa"
-                            filterTime={isTimeInFuture}
-                        />
-                    </Col>
-                </Form.Group>
+                        <Form.Group as={Row}>
+                            <Form.Label column sm="2">Start Time:</Form.Label>
+                            <Col sm="10">
+                                <DatePicker
+                                    selected={startTime}
+                                    onChange={time => setStartTime(time)}
+                                    showTimeSelect
+                                    showTimeSelectOnly
+                                    timeIntervals={15}
+                                    timeCaption="Start Time"
+                                    dateFormat="h:mm aa"
+                                    filterTime={isTimeInFuture}
+                                />
+                            </Col>
+                        </Form.Group>
 
-                <Form.Group as={Row}>
-                    <Form.Label column sm="2">End Time:</Form.Label>
-                    <Col sm="10">
-                        <DatePicker
-                            selected={endTime}
-                            onChange={time => setEndTime(time)}
-                            showTimeSelect
-                            showTimeSelectOnly
-                            timeIntervals={15}
-                            timeCaption="End Time"
-                            dateFormat="h:mm aa"
-                            minDate={selectedDate}
-                            maxDate={selectedDate}
-                            filterTime={isTimeInFuture}
-                        />
-                    </Col>
-                </Form.Group>
+                        <Form.Group as={Row}>
+                            <Form.Label column sm="2">End Time:</Form.Label>
+                            <Col sm="10">
+                                <DatePicker
+                                    selected={endTime}
+                                    onChange={time => setEndTime(time)}
+                                    showTimeSelect
+                                    showTimeSelectOnly
+                                    timeIntervals={15}
+                                    timeCaption="End Time"
+                                    dateFormat="h:mm aa"
+                                    minDate={selectedDate}
+                                    maxDate={selectedDate}
+                                    filterTime={isTimeInFuture}
+                                />
+                            </Col>
+                        </Form.Group>
 
-                <fieldset>
-                    <Form.Group as={Row}>
-                        <Form.Label as="legend" column sm={2}>
-                            Session Type
-                        </Form.Label>
-                        {sessionTypeError && <div className="error-message">{sessionTypeError}</div>}
-                        <Col sm={10}>
-                            <Form.Check
-                                type="radio"
-                                label="Virtual"
-                                name="sessionType"
-                                id="virtual"
-                                value="virtual"
-                                checked={sessionType === "virtual"}
-                                onChange={e => setSessionType(e.target.value)}
-                            />
-                            <Form.Check
-                                type="radio"
-                                label="In Person"
-                                name="sessionType"
-                                id="in-person"
-                                value="in-person"
-                                checked={sessionType === "in-person"}
-                                onChange={e => setSessionType(e.target.value)}
-                            />
-                            <Form.Check
-                                type="radio"
-                                label="Coaching"
-                                name="sessionType"
-                                id="coaching"
-                                value="coaching"
-                                checked={sessionType === "coaching"}
-                                onChange={e => setSessionType(e.target.value)}
-                            />
-                        </Col>
-                    </Form.Group>
+                        <fieldset>
+                            <Form.Group as={Row}>
+                                <Form.Label as="legend" column sm={2}>
+                                    Session Type
+                                </Form.Label>
+                                {sessionTypeError && <div className="error-message">{sessionTypeError}</div>}
+                                <Col sm={10}>
+                                    <Form.Check
+                                        type="radio"
+                                        label="Virtual"
+                                        name="sessionType"
+                                        id="virtual"
+                                        value="virtual"
+                                        checked={sessionType === "virtual"}
+                                        onChange={e => setSessionType(e.target.value)}
+                                    />
+                                    <Form.Check
+                                        type="radio"
+                                        label="In Person"
+                                        name="sessionType"
+                                        id="in-person"
+                                        value="in-person"
+                                        checked={sessionType === "in-person"}
+                                        onChange={e => setSessionType(e.target.value)}
+                                    />
+                                    <Form.Check
+                                        type="radio"
+                                        label="Coaching"
+                                        name="sessionType"
+                                        id="coaching"
+                                        value="coaching"
+                                        checked={sessionType === "coaching"}
+                                        onChange={e => setSessionType(e.target.value)}
+                                    />
+                                </Col>
+                            </Form.Group>
 
-                    <Form.Group as={Row}>
-                        <Form.Label column sm="2">Notes:</Form.Label>
-                        <Col sm="10">
-                            <Form.Control 
-                                as="textarea" 
-                                rows={3} 
-                                value={notes} 
-                                onChange={e => setNotes(e.target.value)} 
-                            />
-                        </Col>
-                </Form.Group>
-                </fieldset>
-                <Button type="submit">Post Request</Button>
-            </Form>
+                            <Form.Group as={Row}>
+                                <Form.Label column sm="2">Notes:</Form.Label>
+                                <Col sm="10">
+                                    <Form.Control 
+                                        as="textarea" 
+                                        rows={3} 
+                                        value={notes} 
+                                        onChange={e => setNotes(e.target.value)} 
+                                    />
+                                </Col>
+                        </Form.Group>
+                        </fieldset>
+                        <Button type="submit">Post Request</Button>
+                    </Form>
+                </Card.Body>
+            </Card>
             <Modal show={show} onHide={() => setShow(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Request Submitted</Modal.Title>

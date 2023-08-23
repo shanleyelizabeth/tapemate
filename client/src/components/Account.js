@@ -1,6 +1,7 @@
-import {Button, Image, Col, Row, Form} from 'react-bootstrap'
+import {Button, Image, Col, Row, Form, Card, Container} from 'react-bootstrap'
 import {useState, useEffect, useContext, useRef} from "react"
 import {UserContext} from "../UserProvider"
+import  "../Account.css"
 
 function Account({navigate}){
     const {user, setUser} = useContext(UserContext)
@@ -67,69 +68,83 @@ function Account({navigate}){
     }
 
     return (
-        <div className="account-page">
-            <Row>
-                <Col xs={4}>
-                    <Image src={user?.profile_image} fluid rounded style={{height: '350px'}}/>
-                    {editMode && <Button 
-                                    variant="outline-secondary" 
-                                    size="sm" 
-                                    className="my-2"
-                                    onClick={() => {fileInputRef.current.click()}}
-                                    >
-                                        Update Profile Picture</Button>}
-                    <input 
-                    type="file" 
-                    ref={fileInputRef}
-                    style={{ display: 'none' }}
-                    onChange={e => setProfileImage(e.target.files[0])} 
-                    />
-                </Col>
+        <Container>
+            <Row className="justify-content-center">
+                <Col lg={10} md={12} xs={12}>
+                    <Card className="custom-card">
+                        <Card.Body>
+                            <Row>
+                                <Col xs={4}>
+                                    <Image src={user?.profile_image} fluid rounded style={{height: '350px'}}/>
+                                    {editMode && <Button 
+                                                    variant="outline-secondary" 
+                                                    size="sm" 
+                                                    className="my-2"
+                                                    onClick={() => {fileInputRef.current.click()}}
+                                                    >
+                                                        Update Profile Picture</Button>}
+                                    <input 
+                                    type="file" 
+                                    ref={fileInputRef}
+                                    style={{ display: 'none' }}
+                                    onChange={e => setProfileImage(e.target.files[0])} 
+                                    />
+                                </Col>
 
-                <Col xs={4}>
-                    {editMode ? (
-                        <Form>
-                            <Form.Group>
-                                <Form.Label>Update Username:</Form.Label>
-                                <Form.Control type="text" value={username} onChange={e => setUsername(e.target.value)}/>
-                            </Form.Group>
-                                
-                            <Form.Group>
-                                <Form.Label>Update Location:</Form.Label>
-                                <Form.Control type="text" value={location} onChange={e => setLocation(e.target.value)}/>
+                                <Col xs={4} className="d-flex align-items-center justify-content-center">
+                                    {editMode ? (
+                                        <Form>
+                                            <Form.Group >
+                                                <Form.Label >Update Username:</Form.Label>
+                                                <Form.Control type="text" value={username} onChange={e => setUsername(e.target.value)}/>
+                                            </Form.Group>
+                                                
+                                            <Form.Group>
+                                                <Form.Label>Update Location:</Form.Label>
+                                                <Form.Control type="text" value={location} onChange={e => setLocation(e.target.value)}/>
 
-                            </Form.Group>
-                            <Form.Group>
-                                <Form.Label>Update Password:</Form.Label>
-                                <Form.Control type="text" value={password} onChange={e => setPassword(e.target.value)}/>
-                            </Form.Group>
-                            <Button onClick={handleDelete} variant="outline-secondary" size="sm" className="mt-2">Delete Account</Button>
-                        </Form>
-                    ) : (
-                        <Col xs={4}>
-                            <div className="account-info">
-                                <h5>Username: {user?.username}</h5>
-                                <h5>Location: {user?.location}</h5>
-                            </div>
-                        </Col>
-                    )}
-                </Col>
+                                            </Form.Group>
+                                            <Form.Group>
+                                                <Form.Label>Update Password:</Form.Label>
+                                                <Form.Control type="text" value={password} onChange={e => setPassword(e.target.value)}/>
+                                            </Form.Group>
+                                            <Button onClick={handleDelete} variant="outline-secondary" size="sm" className="mt-4 delete-account-button">Delete Account</Button>
+                                        </Form>
+                                    ) : (
+                                        
+                                        <div className="account-info">
+                                            <div className="info-item d-flex align-items-start">
+                                                <span className="account-label">Username: </span> 
+                                                <span>{user?.username}</span>
+                                            </div>
+                                            <div className="info-item d-flex">
+                                                <span className="account-label">Location: </span>
+                                                <span>{user?.location}</span>
+                                            </div>
+                                        </div>
+                                        
+                                    )}
+                                </Col>
 
-                <Col xs={4} className="d-flex justify-content-end align-items-start">
-                <Button 
-                className="edit-button"
-                    variant="outline-primary" 
-                    onClick={() => {
-                        setEditMode(!editMode) 
-                        setUpdatePassword(false)
-                    }}
-                >
-                    {editMode ? "Cancel" : "Edit"}
-                </Button>
-                {editMode ? (<Button onClick={() => handleUpdate()}>Save</Button>) : null}
+                                <Col xs={4} className="d-flex justify-content-end align-items-start">
+                                <Button 
+                                className="edit-button"
+                                    variant="outline-primary" 
+                                    onClick={() => {
+                                        setEditMode(!editMode) 
+                                        setUpdatePassword(false)
+                                    }}
+                                >
+                                    {editMode ? "Cancel" : "Edit"}
+                                </Button>
+                                {editMode ? (<Button onClick={() => handleUpdate()}>Save</Button>) : null}
+                                </Col>
+                            </Row>
+                        </Card.Body>
+                    </Card>
                 </Col>
             </Row>
-        </div>
+        </Container>
     )
 }
 
