@@ -92,11 +92,11 @@ class Sessions(Resource):
                 date = date_obj,
                 start_time = start_time_obj,
                 end_time = end_time_obj,
-                notes = data.get('notes')
+                session_type=data.get('session_type')
             )
             db.session.add(new_session)
             db.session.commit()
-            return make_response(new_session.to_dict(only=('actor_id', 'reader_id', 'date', 'start_time', 'end_time', 'notes', 'status')))
+            return make_response(new_session.to_dict(only=('actor_id', 'reader_id', 'date', 'start_time', 'end_time', 'notes', 'session_type','status')))
         except Exception as e:
             db.session.rollback()
             return make_response({"error" : str(e)}, 500)

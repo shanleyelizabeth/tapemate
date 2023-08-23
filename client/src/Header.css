@@ -1,0 +1,77 @@
+
+
+.header.navbar.navbar-expand-lg.navbar-light.bg-light {
+    background-color: rgba(229, 227, 220, 0.93) !important;
+    
+}
+
+.profile-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+}
+
+.profile-image img {
+    display: block;
+    width: 100%; 
+    height: auto;
+    position: absolute;
+    top: 0; 
+}
+
+.right-nav {
+    display: flex;
+
+}
+
+.right-nav button {
+    margin-right: 20px;
+    background-color: grey;
+    border-color: grey;
+}
+
+.photo-icon {
+    margin-right: 8px;
+}
+
+.photo-icon::after {
+    content: "▼";  
+    position: absolute;
+    bottom: 1px;  
+    right: 5px;  
+    font-size: 12px;  
+    color: rgba(211, 209, 209, 0.611);  
+    opacity: 0;  
+    transition: opacity 0.3s ease;  
+}
+
+
+.photo-icon:hover::after {
+    opacity: 1;
+}
+
+
+
+.new-request-link {
+    color: white;
+
+}
+
+.nav-bar-link {
+    color: black;
+    text-decoration: none;
+    opacity: 0.6;
+    margin: 10px;
+}
+.nav-bar-link.active-link {
+    opacity: 1;
+}
+
+
+
+
+
+
+

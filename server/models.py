@@ -103,6 +103,7 @@ class Session(db.Model, SerializerMixin):
     start_time = db.Column(db.Time)
     end_time = db.Column(db.Time)
     notes = db.Column(db.String)
+    session_type = db.Column(db.String)
     STATUS_SCHEDULED = 'scheduled'
     STATUS_COMPLETED = 'completed'
     STATUS_CHOICES = [
@@ -136,6 +137,8 @@ class Session(db.Model, SerializerMixin):
             'start_time': self.start_time.strftime('%H:%M:%S'),
             'end_time': self.end_time.strftime('%H:%M:%S'),
             'status': self.status,
+            'notes': self.notes,
+            'session_type': self.session_type,
             'actor': {
                 'username': self.actor.username if self.actor else None,
                 'profile_image': self.actor.profile_image if self.actor else None,

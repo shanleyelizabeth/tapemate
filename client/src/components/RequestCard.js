@@ -19,7 +19,7 @@ function RequestCard({ removeRequest, actor_id, request_id, actor, actor_image, 
             date: date,
             start_time: start_time,
             end_time: end_time,
-            notes: notes
+            session_type: session_type
         }
 
         fetch('/sessions', {

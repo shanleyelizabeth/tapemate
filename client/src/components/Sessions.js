@@ -2,14 +2,17 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import React, { useState, useEffect } from 'react'
+import { Card } from 'react-bootstrap'
 import { useContext } from 'react'
 import { UserContext } from '../UserProvider'
 import "../Calendar.css"
+import moment from 'moment'
 
 
 function Sessions({navigate}){
     const [sessions, setSessions] = useState([])
     const [selectedInfo, setSelectedInfo] = useState(null)
+    const [showInfo, setShowInfo] = useState(false)
 
     const {user} = useContext(UserContext)
 
@@ -24,6 +27,7 @@ function Sessions({navigate}){
         fetch('/sessions')
         .then(r => r.json())
         .then((sessions) => {
+            console.log("Sesssions:", sessions)
             const filteredSessions = sessions.filter((session) => session.actor_id === user?.id || session.reader_id === user?.id)
 
             const calendarData = filteredSessions.map((session) => ({
@@ -35,6 +39,8 @@ function Sessions({navigate}){
                 extendedProps: {
                     notes: session.notes,
                     photo: session.actor.profile_image,
+                    name: session.actor.username,
+                    session_type: session.session_type,
                 },
                 color: session.actor_id === user?.id ? 'green' : 'blue'
             }))
@@ -44,7 +50,13 @@ function Sessions({navigate}){
     }, [user?.id])
 
     const handleEventClick = (info) => {
-        setSelectedInfo(info.event)
+        console.log("Event info", info.event)
+        setSelectedInfo({...info.event,
+        extendedProps: info.event.extendedProps,
+        startStr: moment(info.event.startStr).format('MMMM Do YYYY, h:mm a'),
+        endStr: moment(info.event.endStr).format('h:mm a')
+        })
+        setShowInfo(true)
     }
 
 
@@ -65,17 +77,32 @@ function Sessions({navigate}){
                 eventClick={handleEventClick}/>
             </div>
             <div className="info-container">
-                {selectedInfo ? (
-                    <div>
-                        <h2 className="info-header">{selectedInfo.title}</h2>
-                        <p>{selectedInfo.startStr}</p>
-                        <p>{selectedInfo.endStr}</p>
-                        <p>{selectedInfo.extendedProps.notes}</p>
-                        <img style ={{width: '75px', height: '100px'}}src={selectedInfo.extendedProps.photo}/>
-                        </div>
-                ) : 
-                (<p>Click on an event to see the details</p>
-                )}
+            
+                <Card style={{width: '20rem'}}>
+                    {showInfo ? 
+                        (<>
+                            <Card.Img variant="top" style={{height: '100px', width: '75px'}} src={selectedInfo?.extendedProps.photo} />
+                            <Card.Body>
+                                <Card.Title> {selectedInfo?.title}</Card.Title>
+
+                                <Card.Text>
+                                    When:<br />
+                                    {selectedInfo?.startStr} - {selectedInfo?.endStr}
+                                </Card.Text>
+                                <Card.Text>
+                                    Type: <br />
+                                    {selectedInfo?.extendedProps.session_type}
+                                </Card.Text>
+                                <Card.Text>
+                                    Additional Notes: <br />
+                                    {selectedInfo?.extendedProps.notes}
+                                </Card.Text>
+                            </Card.Body>
+                        </>) : 
+                        (<Card.Title>Click on an event for more information!</Card.Title>) }
+                </Card>
+            
+            
             </div>
         </div>
     )

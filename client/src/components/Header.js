@@ -4,6 +4,8 @@ import {useState, useEffect, useContext} from "react"
 import {UserContext} from "../UserProvider"
 import Container from 'react-bootstrap/Container';
 import { Button, Navbar, Nav, Dropdown} from 'react-bootstrap';
+import "../Header.css"
+
 
 
 
@@ -12,7 +14,7 @@ function Header({navigate}){
 
     const CustomToggle = React.forwardRef(({ onClick }, ref) => (
         <div
-            src={user.profile_image}
+            className="photo-icon"
             ref={ref}
             onClick={(e) => {
                 e.preventDefault();
@@ -33,7 +35,7 @@ function Header({navigate}){
                     display: 'block',
                     width: '100%',
                     height: 'auto',
-                    position: 'absoulute',
+                    position: 'absolute',
                     top: '0'
                 }}
             />
@@ -56,16 +58,32 @@ function Header({navigate}){
 
 
     return (
-        <Navbar bg="light" expand="lg" className="header">
-            <Navbar.Brand>TM Logo</Navbar.Brand>
+        <Navbar bg="light" expand="lg" className="header sticky-top">
+            <Navbar.Brand>
+                <img 
+                    src="/Logo.PNG"
+                    width="60" 
+                    height="40" 
+                    className="d-inline-block align-top"
+                    alt="Tapemate Logo"
+                    />
+            </Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav" className="left-side-nav">
                 <Nav className="mr-auto nav-bar">
                     <Nav.Item className="nav-bar-list">
-                        <NavLink className="nav-bar-link" to="home">Home</NavLink>
+                        <NavLink 
+                            exact 
+                            activeClassName="active-link"
+                            className="nav-bar-link" 
+                            to="home">Home</NavLink>
                     </Nav.Item>
                     <Nav.Item className="nav-bar-list">
-                        <NavLink className="nav-bar-link" to="sessions">Sessions</NavLink>
+                        <NavLink
+                            exact
+                            activeClassName="active-link"
+                            className="nav-bar-link" 
+                            to="sessions">Sessions</NavLink>
                     </Nav.Item>
                 </Nav>
             </Navbar.Collapse>
@@ -75,7 +93,7 @@ function Header({navigate}){
                 </Button>
                 <Dropdown>
                     <Dropdown.Toggle as={CustomToggle}/>
-                    <Dropdown.Menu>
+                    <Dropdown.Menu align="end">
                         <Dropdown.Item href="/account">Account</Dropdown.Item>
                         <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
                     </Dropdown.Menu>
