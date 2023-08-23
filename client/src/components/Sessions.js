@@ -2,7 +2,7 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import React, { useState, useEffect } from 'react'
-import { Card } from 'react-bootstrap'
+import { Card, Button } from 'react-bootstrap'
 import { useContext } from 'react'
 import { UserContext } from '../UserProvider'
 import "../Calendar.css"
@@ -27,13 +27,13 @@ function Sessions({navigate}){
         fetch('/sessions')
         .then(r => r.json())
         .then((sessions) => {
-            console.log("Sesssions:", sessions)
+
             const filteredSessions = sessions.filter((session) => session.actor_id === user?.id || session.reader_id === user?.id)
 
             const calendarData = filteredSessions.map((session) => ({
                 title: session.actor_id === user?.id ? 
-                    `Acting session with ${session.reader.username}` : 
-                    `Reading session for ${session.actor.username}`,
+                    `Acting Session With ${session.reader.username}` : 
+                    `Reading Session For ${session.actor.username}`,
                 start: new Date(session.date + 'T' + session.start_time),
                 end: new Date(session.date + 'T' + session.end_time),
                 extendedProps: {
@@ -42,7 +42,7 @@ function Sessions({navigate}){
                     name: session.actor.username,
                     session_type: session.session_type,
                 },
-                color: session.actor_id === user?.id ? 'green' : 'blue'
+                color: session.actor_id === user?.id ? '#BFD5A5' : '#A5C2F7'
             }))
             setSessions(calendarData)
         })
@@ -50,11 +50,12 @@ function Sessions({navigate}){
     }, [user?.id])
 
     const handleEventClick = (info) => {
-        console.log("Event info", info.event)
-        setSelectedInfo({...info.event,
-        extendedProps: info.event.extendedProps,
-        startStr: moment(info.event.startStr).format('MMMM Do YYYY, h:mm a'),
-        endStr: moment(info.event.endStr).format('h:mm a')
+        const {title, startStr, endStr, extendedProps} = info.event
+        setSelectedInfo({
+            title,
+            startStr: moment(info.event.startStr).format('MMMM Do YYYY, h:mm a'),
+            endStr: moment(info.event.endStr).format('h:mm a'),
+            extendedProps
         })
         setShowInfo(true)
     }
@@ -64,17 +65,22 @@ function Sessions({navigate}){
     return (
         <div className="sessions-container">
             <div className="calendar-container">
-                <button onClick={() => toggleView('timeGridDay')}>Day View</button>
-                <button onClick={() => toggleView('timeGridWeek')}>Week View</button>
-
+                <div>
+                    <Button onClick={() => toggleView('timeGridDay')}>Day View</Button>
+                    <Button onClick={() => toggleView('timeGridWeek')}>Week View</Button>
+                </div>
                 <FullCalendar 
                 className = "calendar"
                 initialView="timeGridDay"
                 plugins={[dayGridPlugin, timeGridPlugin]}
                 ref={calendarRef}
+                slotMinTime="08:00:00"
+                slotMaxTime="21:30:00"
                 events={sessions}
                 style={{width: '100%'}}
+                allDaySlot={false}
                 eventClick={handleEventClick}/>
+                
             </div>
             <div className="info-container">
             

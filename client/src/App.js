@@ -32,7 +32,7 @@ function App() {
 
 
   return (
-      <div className ="App">
+      <div style={{ backgroundColor: '#e5e3dc', minHeight: '100vh'}} className ="App">
         {user ? <Header navigate={navigate}/> : null}
           <Routes>
             <Route path='/' element={<Authentication navigate={navigate}/>}/>

@@ -74,14 +74,12 @@ function Header({navigate}){
                     <Nav.Item className="nav-bar-list">
                         <NavLink 
                             exact 
-                            activeClassName="active-link"
                             className="nav-bar-link" 
                             to="home">Home</NavLink>
                     </Nav.Item>
                     <Nav.Item className="nav-bar-list">
                         <NavLink
                             exact
-                            activeClassName="active-link"
                             className="nav-bar-link" 
                             to="sessions">Sessions</NavLink>
                     </Nav.Item>

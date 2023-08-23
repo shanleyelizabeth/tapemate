@@ -2,33 +2,56 @@
     display: flex;
     height: 100vh; 
     margin:30px;
-    width: 100%
+    width: 100%;
+    
 }
 .calendar-container{
     flex: 2 !important;
     flex-shrink: 0 !important;
     min-width: 50% !important;
     width: 50% !important;
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    top: 0px
+}
+
+.calendar-container button{
+    background: #2c3e50;
+    border-color: #2c3e50;
+}
+
+.calendar-container button:hover{
+    background-color: white;
+    color:black
 }
 
 .info-container {
     flex: 1;
     margin-right: 50px;
-    border: solid
+    margin-top: 2rem;
 }
 
 .fc {
     font-size: .65em !important;
     width: 75% !important; 
     margin: 0px !important; 
-    height: 75%;
+    height: 80%;
+    border: solid white;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    padding: 4px;
 }
 
-/* a {
-    --bs-link-color-rgb: 128, 128, 128;  
-    --bs-link-opacity: 1;
 
-} */
+.fc a{
+    text-decoration: none;
+    color:rgba(10, 9, 9, 0.657)
+}
+
+
 
 .fc-col-header {
     background-color: #F3F4F6;
@@ -36,10 +59,11 @@
 }
 
 .fc-event {
-    background-color: #34C759;
-    border: none;
-    color: white;
+    border: black;
     font-weight: bold;
+    font-size: small;
+    cursor: pointer;
+    
 }
 
 /* .fc-day-today {
