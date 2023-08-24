@@ -107,8 +107,8 @@ function RequestForm(){
                 <Card.Body>
                     <Form onSubmit={handleSubmit}>
                         <Form.Group as ={Row}>
-                            <Form.Label column sm='2'>Select Date:</Form.Label>
-                            <Col sm="10">
+                            <Form.Label column sm='3'>Select Date:</Form.Label>
+                            <Col sm="8">
                                 <DatePicker
                                     selected={selectedDate}
                                     onChange={date => setSelectedDate(date)}
@@ -119,8 +119,8 @@ function RequestForm(){
                         </Form.Group>
 
                         <Form.Group as={Row}>
-                            <Form.Label column sm="2">Start Time:</Form.Label>
-                            <Col sm="10">
+                            <Form.Label column sm="3">Start Time:</Form.Label>
+                            <Col sm="8">
                                 <DatePicker
                                     selected={startTime}
                                     onChange={time => setStartTime(time)}
@@ -135,8 +135,8 @@ function RequestForm(){
                         </Form.Group>
 
                         <Form.Group as={Row}>
-                            <Form.Label column sm="2">End Time:</Form.Label>
-                            <Col sm="10">
+                            <Form.Label column sm="3">End Time:</Form.Label>
+                            <Col sm="8">
                                 <DatePicker
                                     selected={endTime}
                                     onChange={time => setEndTime(time)}
@@ -154,11 +154,11 @@ function RequestForm(){
 
                         <fieldset>
                             <Form.Group as={Row}>
-                                <Form.Label as="legend" column sm={2}>
-                                    Session Type
+                                <Form.Label as="legend" column sm={3}>
+                                    Session Type:
                                 </Form.Label>
                                 {sessionTypeError && <div className="error-message">{sessionTypeError}</div>}
-                                <Col sm={10}>
+                                <Col sm={9} className="radio-buttons d-flex align-items-center">
                                     <Form.Check
                                         type="radio"
                                         label="Virtual"
@@ -201,7 +201,7 @@ function RequestForm(){
                                 </Col>
                         </Form.Group>
                         </fieldset>
-                        <Button type="submit">Post Request</Button>
+                        <Button className ="form-submit-button" type="submit">Post Request</Button>
                     </Form>
                 </Card.Body>
             </Card>
