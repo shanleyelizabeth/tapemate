@@ -1,0 +1,43 @@
+.authentication img{
+    width: 600px;
+    margin-top: -250px !important;
+    margin-bottom: -100px;
+    
+
+}
+
+.authentication {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+    margin-bottom: 50px;
+
+}
+.authentication::before {
+    content: "";
+    height: 10%;  /* You can adjust this value */
+    visibility: hidden;
+    flex-shrink: 0;  /* Prevent it from shrinking */
+}
+
+.choose-pic {
+    border-radius: 10px;
+}
+
+.submit-btn {
+    background-color: rgba(15, 14, 14, 0.844) !important;
+    border-color: rgba(15, 14, 14, 0.844) !important;
+}
+
+.login-button{
+    background-color: rgba(15, 14, 14, 0.844) !important;
+    border-color: rgba(15, 14, 14, 0.844) !important;
+}
+
+.signup-button {
+    background-color: rgba(252, 252, 252, 0.844) !important;
+    border-color: rgba(15, 14, 14, 0.844)!important;
+    color: rgba(15, 14, 14, 0.844) !important;
+}
