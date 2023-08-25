@@ -8,7 +8,7 @@
 .form-container .card{
     background-color: #eeece8 ;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    margin: 50px;
+    margin-top: -100px;
     width: 100%;
     text-align: center;
     max-width: 600px;
@@ -18,8 +18,6 @@
 .radio-buttons {
     margin-top: 5px !important;
 }
-
-
 
 .radio-buttons > .form-check {
     margin-right: 0.5rem; 

@@ -6,8 +6,6 @@ import  "../Account.css"
 function Account({navigate}){
     const {user, setUser} = useContext(UserContext)
     const [editMode, setEditMode] = useState(false)
-    const [updatePassword, setUpdatePassword] = useState(false)
-
     const [username, setUsername] = useState(user?.username)
     const [location, setLocation] = useState(user?.location)
     const [password, setPassword] = useState(''); 
@@ -15,8 +13,8 @@ function Account({navigate}){
     const fileInputRef = useRef(null)
 
     useEffect(() => {
-        setUsername(user?.username || "");
-        setLocation(user?.location || "");
+        setUsername(user?.username);
+        setLocation(user?.location);
     }, [user])
 
     const handleUpdate = () => {
@@ -132,7 +130,7 @@ function Account({navigate}){
                                     variant="outline-primary" 
                                     onClick={() => {
                                         setEditMode(!editMode) 
-                                        setUpdatePassword(false)
+
                                     }}
                                 >
                                     {editMode ? "Cancel" : "Edit"}

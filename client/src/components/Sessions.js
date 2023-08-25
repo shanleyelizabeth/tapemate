@@ -2,7 +2,7 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import React, { useState, useEffect } from 'react'
-import { Card, Button } from 'react-bootstrap'
+import { Card, Button, Form } from 'react-bootstrap'
 import { useContext } from 'react'
 import { UserContext } from '../UserProvider'
 import "../Calendar.css"
@@ -13,6 +13,8 @@ function Sessions({navigate}){
     const [sessions, setSessions] = useState([])
     const [selectedInfo, setSelectedInfo] = useState(null)
     const [showInfo, setShowInfo] = useState(false)
+    const [clicked, setClicked] = useState(false)
+    const [notes, setNotes] = useState('')
 
     const {user} = useContext(UserContext)
 
@@ -31,16 +33,19 @@ function Sessions({navigate}){
             const filteredSessions = sessions.filter((session) => session.actor_id === user?.id || session.reader_id === user?.id)
 
             const calendarData = filteredSessions.map((session) => ({
+                id: session.id,
                 title: session.actor_id === user?.id ? 
                     `Acting Session With ${session.reader.username}` : 
                     `Reading Session For ${session.actor.username}`,
                 start: new Date(session.date + 'T' + session.start_time),
                 end: new Date(session.date + 'T' + session.end_time),
                 extendedProps: {
+                    
                     notes: session.notes,
-                    photo: session.actor.profile_image,
+                    photo: session.actor_id === user?.id ? session.reader.profile_image : session.actor.profile_image,
                     name: session.actor.username,
                     session_type: session.session_type,
+                    reader_name: session.reader.username,
                 },
                 color: session.actor_id === user?.id ? '#BFD5A5' : '#A5C2F7'
             }))
@@ -50,15 +55,56 @@ function Sessions({navigate}){
     }, [user?.id])
 
     const handleEventClick = (info) => {
-        const {title, startStr, endStr, extendedProps} = info.event
+        const {id, title, startStr, endStr, extendedProps} = info.event
+
         setSelectedInfo({
+            id,
             title,
             startStr: moment(info.event.startStr).format('MMMM Do YYYY, h:mm a'),
             endStr: moment(info.event.endStr).format('h:mm a'),
             extendedProps
         })
+        console.log('selected info:', selectedInfo)
         setShowInfo(true)
     }
+
+    const handleNotes = () => {
+        const sessionId = selectedInfo.id;
+        
+        fetch(`/sessions/${sessionId}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type' : 'application/json',
+            },
+            body: JSON.stringify({notes}),
+        })
+        .then(r => r.json())
+        .then(data => {
+            const updatedSessions = sessions.map(session => {
+                if (session.id === sessionId){
+                    return {
+                        ...session,
+                        extendedProps: {
+                            ...session.extendedProps,
+                            notes: notes,
+                        }
+                    }
+                }
+                return session
+            })
+            setNotes('')
+            setClicked(!clicked)
+            setSessions(updatedSessions)
+            setSelectedInfo(prevState => ({
+                ...prevState,
+                extendedProps: {
+                    ...prevState.extendedProps,
+                    notes: notes,
+                }
+            }))
+        })
+    }
+
 
 
 
@@ -103,6 +149,21 @@ function Sessions({navigate}){
                                     Additional Notes: <br />
                                     {selectedInfo?.extendedProps.notes}
                                 </Card.Text>
+                                {clicked ? 
+                                    (<Form>
+                                        <Form.Control
+                                                as="textarea"
+                                                value={notes}
+                                                onChange={e => setNotes(e.target.value)}
+                                            />
+                                        <Button onClick={handleNotes}>Add Note</Button>
+                                    </Form>) : 
+                                    (<Button 
+                                        onClick={() => {setClicked(!clicked)}}
+
+                                        >Add Session Notes</Button>) 
+                                }
+                                
                             </Card.Body>
                         </>) : 
                         (<Card.Title>Click on an event for more information!</Card.Title>) }

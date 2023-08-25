@@ -101,6 +101,21 @@ class Sessions(Resource):
             db.session.rollback()
             return make_response({"error" : str(e)}, 500)
 
+class SessionById(Resource):
+    def patch(self, id):
+        session = Session.query.filter_by(id=id).first()
+        if not session:
+            return make_response({'error': 'Session not found'}, 400 )
+
+        data = request.get_json()
+
+        if 'notes' in data:
+            session.notes = data['notes']
+        else:
+            return make_response({'error': 'Missing notes in request'}, 400)
+        db.session.add(session)
+        db.session.commit()
+        return make_response(session.to_dict(only=('notes',)), 200)
 
 
 
@@ -199,6 +214,7 @@ def logout():
 api.add_resource(UserById,'/users/<int:id>')
 api.add_resource(Requests, '/requests')
 api.add_resource(Sessions, '/sessions')
+api.add_resource(SessionById, '/sessions/<int:id>')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
