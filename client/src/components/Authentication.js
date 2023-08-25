@@ -2,6 +2,7 @@ import {useState, useEffect, useContext} from "react"
 import { UserContext } from "../UserProvider"
 import {Button, Form, Alert, Container} from "react-bootstrap"
 import logoheader from "../logoheader.PNG"
+import header2 from "../header2.png"
 import "../auth.css"
 
 
@@ -69,7 +70,7 @@ function Authentication({navigate}){
             <div>
                 {error && <Alert variant="danger">{error}</Alert>}
             </div>
-            <img src={logoheader} alt="Logo"/>
+            <img src={header2} alt="Logo"/>
             <p className="continue">To continue, please Login or Signup.</p>
             {isLogin === 0 ?
             <div className="login-or-signup">
