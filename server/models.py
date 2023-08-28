@@ -11,7 +11,17 @@ class User(db.Model, SerializerMixin):
     username = db.Column(db.String, nullable=False, unique=True)
     _password_hash= db.Column(db.String)
     location = db.Column(db.String)
+    availability_days = db.Column(db.String)
+    availability_start_time = db.Column(db.Time) 
+    availability_end_time = db.Column(db.Time) 
     profile_image = db.Column(db.String, default=None)
+    is_available_as_reader = db.Column(db.Boolean, default=True)
+    gender = db.Column(db.String, nullable=True)
+    available_in_person = db.Column(db.Boolean, default = False)
+    available_virtual = db.Column(db.Boolean, default = False)
+    available_coaching = db.Column(db.Boolean, default=False)
+
+
 
     @property
     def password_hash(self):
@@ -34,9 +44,24 @@ class User(db.Model, SerializerMixin):
     actor_requests = db.relationship('Request', cascade='all, delete-orphan', back_populates='actor', foreign_keys='Request.actor_id')
     reader_requests = db.relationship('Request', cascade='all, delete-orphan', back_populates='reader', foreign_keys='Request.reader_id')
 
+    availabilities = db.relationship('Availability', back_populates='user')
+
 
     def __repr__(self):
         return f'User {self.username}, ID {self.id}'
+    
+class Availability(db.Model, SerializerMixin):
+    __tablename__ = 'availabilities'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    start_time = db.Column(db.DateTime, nullable=False)
+    end_time = db.Column(db.DateTime, nullable=False)
+
+    user = db.relationship('User', back_populates='availabilities')
+
+    def __repr__(self):
+        return f"Availability(id={self.id}, user_id={self.user_id}, start_time={self.start_time}, end_time={self.end_time})"
     
 class Request(db.Model, SerializerMixin):
     __tablename__ = 'requests'

@@ -142,6 +142,14 @@ class UserById(Resource):
         if 'password' in request.form:
             user.password_hash = request.form['password']
 
+        if 'gender' in request.form:
+            user.gender = request.form['gender']
+
+        for session_type in ['available_in_person', 'available_virtual', 'available_coaching']:
+            if session_type in request.form:
+                value = bool(request.form[session_type])
+                setattr(user, session_type, value)
+
         if 'profile_image' in request.files:
             file = request.files['profile_image']
             if file:
@@ -151,7 +159,7 @@ class UserById(Resource):
                 user.profile_image = filepath
 
         db.session.commit()
-        return make_response(user.to_dict(only=('username', 'id', 'profile_image', 'location')), 200)
+        return make_response(user.to_dict(only=('username', 'id', 'profile_image', 'location', 'gender', 'available_for_in_person', 'available_for_virtual', 'available_for_coaching')), 200)
 
 @app.route('/authorized', methods=["GET"])
 def authorized():
