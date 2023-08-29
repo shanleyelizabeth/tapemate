@@ -85,7 +85,7 @@ function Sessions({navigate}){
     useEffect(() => {
         fetch('/sessions_requests')
         .then(r => r.json())
-        .then((data) => {console.log("Parsed JSON: ", data)
+        .then((data) => {
 
             const items = data.data
             const calendarData = items.map((item) => {
@@ -104,6 +104,8 @@ function Sessions({navigate}){
                         reader_name: getReaderName(item, isActor),
                         type: item.type,
                         status: item.status,
+                        actor_id: item.actor_id,
+                        reader_id: item.reader_id,
                     },
                     color: getColor(item, isActor)
                 }
@@ -130,7 +132,54 @@ function Sessions({navigate}){
     }
 
     const handleAcceptRequest = () => {
+        const startDate = moment(selectedInfo?.startStr, "MMMM Do YYYY, h:mm a");
+        const endDate = moment(selectedInfo?.startStr.split(",")[0] + ", " + selectedInfo?.endStr, "MMMM Do YYYY, h:mm a");
 
+        const sessionData = {
+            actor_id: selectedInfo?.extendedProps.actor_id,
+            reader_id: selectedInfo?.extendedProps.reader_id,
+            date: startDate.format('YYYY-MM-DD'),  
+            start_time: startDate.format('HH:mm:ss'),  
+            end_time: endDate.format('HH:mm:ss'), 
+            session_type: selectedInfo?.extendedProps.session_type,
+            notes: selectedInfo?.extendedProps.notes,
+            
+        }
+        console.log("Selected Info:", selectedInfo);
+        console.log("Session Data:", sessionData);
+
+        fetch('/sessions', {
+            method: 'POST',
+            headers: {
+                'Content-Type' : 'application/json',
+            },
+            body: JSON.stringify(sessionData),
+        })
+        .then(r => r.json())
+        .then(newSession => {
+            console.log("New Session Response:", newSession)
+            if (newSession) {
+                const requestId = selectedInfo.id
+                fetch(`/requests/${requestId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({status: 'accepted'}),
+                })
+                .then(r => r.json())
+                .then(updatedRequest => {
+                    if(updatedRequest) {
+                        const updatedSessions = sessions.filter(session => session.id !== requestId)
+                        const newSession = {
+                            id: updatedRequest.newSessionId,
+                        }
+                            updatedSessions.push(newSession)
+                            setSessions(updatedSessions)
+                    }
+                })
+            }
+        })
     }
 
     const handleNotes = () => {

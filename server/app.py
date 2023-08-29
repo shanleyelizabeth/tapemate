@@ -4,8 +4,9 @@ from flask_restful import Resource
 from flask import request, make_response, session
 from datetime import datetime
 from werkzeug.utils import secure_filename
+from flask import jsonify
 import os
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 
 from models import User, Session, Request, Availability
 
@@ -66,6 +67,25 @@ class Requests(Resource):
             return make_response(new_request.to_dict(only=('actor_id', 'notes', 'date', 'start_time', 'end_time', 'session_type')), 201)
         except Exception as e:
             return make_response({"error" : str(e)}, 500)
+        
+class RequestsById(Resource):
+    def patch(self, id):
+        request_record = Request.query.filter_by(id=id).first()
+        if not request_record:
+            return make_response({'error': 'Request not found'}, 400 )
+
+        data = request.get_json()
+
+        if 'status' in data:
+            request_record.status = data['status']
+
+        try:
+            db.session.commit()
+            return make_response({'message': 'Request updated successfully'}, 200)
+        except Exception as e:
+            db.session.rollback()
+            return make_response({'error': str(e)}, 500)
+
 
 class Sessions(Resource):
     def get(self):
@@ -73,25 +93,18 @@ class Sessions(Resource):
         return make_response(sessions, 200)
     
     def post(self):
-        data = request.get_json()
-
-        date_str = data.get('date')
-        start_time_str = data.get('start_time')
-        end_time_str = data.get('end_time')
-        
-
-        date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
-        start_time_obj = datetime.strptime(start_time_str, "%H:%M:%S").time()
-        end_time_obj = datetime.strptime(end_time_str, "%H:%M:%S").time()
-
-
         try:
-            request_id = data.get('request_id')
-            request_to_update = Request.query.filter_by(id=request_id).first()
-            if not request_to_update:
-                return make_response({"error": "Request not found"})
-            request_to_update.status = 'Accepted'
+            data = request.get_json()
+            
+            print("Inside try block.")
+            date_str = data.get('date')
+            start_time_str = data.get('start_time')
+            end_time_str = data.get('end_time')
+            date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
+            start_time_obj = datetime.strptime(start_time_str, "%H:%M:%S").time()
+            end_time_obj = datetime.strptime(end_time_str, "%H:%M:%S").time()
 
+            
             new_session = Session(
                 actor_id = data.get('actor_id'),
                 reader_id = data.get('reader_id'),
@@ -100,12 +113,17 @@ class Sessions(Resource):
                 end_time = end_time_obj,
                 session_type=data.get('session_type')
             )
+            print("About to add new session to database.")
             db.session.add(new_session)
+            print("About to commit to database.")
             db.session.commit()
-            return make_response(new_session.to_dict(only=('actor_id', 'reader_id', 'date', 'start_time', 'end_time', 'notes', 'session_type','status')))
+            print("Successfully added new session, returning response.")
+            return make_response(jsonify(new_session.to_dict(only=('actor_id', 'reader_id', 'date', 'start_time', 'end_time', 'notes', 'session_type','status'))), 200)
+
         except Exception as e:
             db.session.rollback()
-            return make_response({"error" : str(e)}, 500)
+            print("Exception:", e)  # For debugging
+            return make_response(jsonify({"error": str(e)}), 500)
 
 class SessionById(Resource):
     def patch(self, id):
@@ -245,7 +263,10 @@ def get_sessions_requests():
             or_(Session.actor_id == current_user_id, Session.reader_id == current_user_id)).all()
 
         requests = Request.query.filter(
-            or_(Request.actor_id == current_user_id, Request.reader_id == current_user_id)).all()
+            and_(
+                or_(Request.actor_id == current_user_id, Request.reader_id == current_user_id),
+                Request.status == "open")
+            ).all()
         
         session_dicts = [s.to_custom_dict() for s in sessions]
         request_dicts = [r.to_custom_dict() for r in requests]
@@ -323,6 +344,7 @@ def logout():
     
 api.add_resource(UserById,'/users/<int:id>')
 api.add_resource(Requests, '/requests')
+api.add_resource(RequestsById, '/requests/<int:id>')
 api.add_resource(Sessions, '/sessions')
 api.add_resource(SessionById, '/sessions/<int:id>')
 api.add_resource(Availabilities, '/availabilities')

@@ -10,7 +10,7 @@ function UserCard({ username, id, profile_image, availabilities, gender, locatio
 
     const formatAvailability = (availability) => {
         const weekdays =["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-        const groupedByDay = {};
+        const groupedByDay = {}
         
         availabilities.forEach(avail => {
             const day = avail.day_of_week

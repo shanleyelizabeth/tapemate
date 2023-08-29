@@ -51,14 +51,7 @@ const userCards = users.map(user =>{
             )
 })
 
-const formatDate = (inputDate) => {
-    const dateObject = new Date(inputDate);
-    const month = dateObject.toLocaleString('default', { month: 'long' });
-    const day = dateObject.getDate();
-    const year = dateObject.getFullYear();
-    
-    return `${month} ${day}, ${year}`;
-}
+
 
 const handleBooking = (e) => {
     e.preventDefault()
