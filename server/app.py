@@ -218,7 +218,13 @@ def get_homepage_users():
                     User.is_available_as_reader == True, 
                     Availability.user_id.isnot(None)).all()
 
-        user_dicts = [user.to_custom_dict() for user in users]
+        user_dicts =[]
+        for user in users:
+            user_dict = user.to_custom_dict()
+            user_dict['availabilities'] = [a.to_custom_dict() for a in user.availabilities]
+            user_dicts.append(user_dict)
+
+
 
         return make_response(user_dicts, 200)
     except Exception as e:

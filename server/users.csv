@@ -11,3 +11,5 @@ Savannah,password,"Brooklyn, NY", http://localhost:5555/static/user_images/Savan
 Natalee,password,"Los Angeles, CA", http://localhost:5555/static/user_images/Natalee.jpg,True,Female,True,True,True
 Olivia,password,"New York, NY", http://localhost:5555/static/user_images/Olivia.jpg,True,Female,True,True,False
 Kevin,password,"Northern CA",http://localhost:5555/static/user_images/KevinRahm.jpg,True,Male,False,True,True
+Chris,password,"Nashville, TN",http://localhost:5555/static/user_images/ChrisMason.jpg,True,Male,False,True,True
+Mark,password,"Los Angeles, CA",http://localhost:5555/static/user_images/MarkHapka.jpg,True,Male,True,True,True

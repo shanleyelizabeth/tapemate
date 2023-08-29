@@ -53,7 +53,8 @@ class User(db.Model, SerializerMixin):
             'gender': self.gender,
             'available_in_person': self.available_in_person,
             'available_virtual': self.available_virtual,
-            'available_coaching': self.available_coaching
+            'available_coaching': self.available_coaching,
+            
     }
 
 

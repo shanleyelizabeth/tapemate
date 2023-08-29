@@ -37,9 +37,9 @@ function Account({navigate}){
             .then(response => response.json())
             .then(data => {
                 
-                setGender(data.gender);
-                setIsReader(data.is_available_as_reader);
-                setAvailability(data.availabilities);
+                setGender(data.gender)
+                setIsReader(data.is_available_as_reader)
+                setAvailability(data.availabilities)
                 setSessionType({
                     inPerson: data.available_in_person,
                     virtual: data.available_virtual,
