@@ -1,51 +1,40 @@
-import RequestCard from "./RequestCard"
+import UserCard from "./UserCard"
 import {useState, useEffect, } from "react"
 import { Col, Row } from 'react-bootstrap'
 
 
 
 function HomePage(){
-    const [requests, setRequests] = useState([])
+    const [users, setUsers] = useState([])
 
 useEffect(() => {
-    fetch('/requests')
+    fetch('/homepage_users')
     .then(r => r.json())
-    .then(data => setRequests(data))
+    .then(data => setUsers(data))
 },[])
 
-const removeRequest = (request_id) => {
-    const newRequests = requests.filter(request => request.id !== request_id)
-    setRequests(newRequests)
-}
 
 
-const openRequestCards = requests
-            .filter(request => request.status === 'open')
-            .map(request => {
-                return (
-                    <Col className="d-flex">
-                    <RequestCard 
-                                key={request.id}
-                                request_id={request.id}
-                                actor={request.actor_username}
-                                actor_id={request.actor_id}
-                                actor_image={request.actor_profile_image}
-                                date={request.date}
-                                start_time={request.start_time}
-                                end_time={request.end_time}
-                                session_type = {request.session_type}
-                                notes={request.notes}
-                                actor_location={request.actor_location}
-                                removeRequest={removeRequest}
-                        />
-                    </Col>
-                )
+
+const userCards = users.map(user =>{
+            return (
+                <Col className="d-flex">
+                <UserCard 
+                            key={user.id}
+                            username={user.username}
+                            profile_image={user.profile_image}
+                            availability={user.availability}
+                            gender={user.gender}
+                            location={user.location}
+                    />
+                </Col>
+            )
 })
 
     return (
         <div>
             <Row className="m-4">
-            {openRequestCards}
+            {userCards}
             </Row>
         </div>
     )

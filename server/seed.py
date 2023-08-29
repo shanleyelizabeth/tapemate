@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from random import randint, choice as rc
+from ast import literal_eval
 
 
 
@@ -22,7 +23,12 @@ def create_users(rows):
             user=User(
                 username= rows[i][0],
                 location=rows[i][2],
-                profile_image=rows[i][3]
+                profile_image=rows[i][3],
+                is_available_as_reader=literal_eval(rows[i][4]),
+                gender=rows[i][5],
+                available_in_person=literal_eval(rows[i][6]),
+                available_virtual=literal_eval(rows[i][7]),
+                available_coaching=literal_eval(rows[i][8])
             )
             user.password_hash = rows[i][1]
             users.append(user)

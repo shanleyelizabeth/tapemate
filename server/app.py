@@ -206,6 +206,25 @@ class UserById(Resource):
         db.session.commit()
         return make_response(user.to_dict(only=('username', 'id', 'profile_image', 'location', 'gender', 'is_available_as_reader', 'available_in_person', 'available_virtual', 'available_coaching')), 200)
 
+@app.route('/homepage_users', methods=['GET'])
+def get_homepage_users():
+    try:
+        current_user_id = session.get("user_id", None)
+
+        if not current_user_id:
+            return make_response({'error': 'Unauthorized user or Session expired'}, 401)
+        
+        users = db.session.query(User).join(Availability, User.id == Availability.user_id).filter(User.id != current_user_id, 
+                    User.is_available_as_reader == True, 
+                    Availability.user_id.isnot(None)).all()
+
+        user_dicts = [user.to_custom_dict() for user in users]
+
+        return make_response(user_dicts, 200)
+    except Exception as e:
+        return make_response({"error": str(e)}, 500)
+        
+
 @app.route('/authorized', methods=["GET"])
 def authorized():
     try:
