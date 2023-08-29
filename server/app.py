@@ -188,7 +188,7 @@ class UserById(Resource):
 
         for session_type in ['available_in_person', 'available_virtual', 'available_coaching']:
             if session_type in request.form:
-                value = bool(request.form[session_type])
+                value = str_to_bool(request.form[session_type])
                 setattr(user, session_type, value)
 
         if 'is_available_as_reader' in request.form:
