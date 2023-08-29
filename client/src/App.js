@@ -9,7 +9,7 @@ import HomePage from "../src/components/HomePage"
 import Sessions from "../src/components/Sessions"
 import Header from "../src/components/Header"
 import Footer from "../src/components/Footer"
-import RequestForm from "../src/components/RequestForm"
+
 
 
 function App() {
@@ -39,7 +39,7 @@ function App() {
             <Route path='home' element={<HomePage />}/>
             <Route path='account' element={<Account navigate={navigate}/>}/>
             <Route path='sessions' element={<Sessions navigate={navigate}/>}/>
-            <Route path='request-form' element={<RequestForm/>}/>
+            
           </Routes>
         <Footer />
       </div>

@@ -8,9 +8,14 @@ import 'react-datepicker/dist/react-datepicker.css'
 
 function HomePage(){
     const [users, setUsers] = useState([])
-    const [selectedUser, setSelectedUser] = useState(null);
+    const [selectedUser, setSelectedUser] = useState(null)
     const [showModal, setShowModal] = useState(false)
-    const [sessionType, setSessionType] = useState("")   
+    const [sessionType, setSessionType] = useState("") 
+    const [notes, setNotes] = useState("") 
+    const [selectedDate, setSelectedDate] = useState(new Date())
+    const [startTime, setStartTime] = useState("")
+    const [endTime, setEndTime] = useState("")
+    const [showConfirmationModal, setShowConfirmationModal] = useState(false)
 
     useEffect(() => {
         fetch('/homepage_users')
@@ -45,6 +50,43 @@ const userCards = users.map(user =>{
             )
 })
 
+const formatDate = (inputDate) => {
+    const dateObject = new Date(inputDate);
+    const month = dateObject.toLocaleString('default', { month: 'long' });
+    const day = dateObject.getDate();
+    const year = dateObject.getFullYear();
+    
+    return `${month} ${day}, ${year}`;
+}
+
+const handleBooking = (e) => {
+    e.preventDefault()
+    const formattedDate = formatDate(selectedDate)
+    const formData = {
+        date: formattedDate,
+        start_time: startTime,
+        end_time: endTime,
+        notes: notes,
+        session_type: sessionType
+    }
+
+    fetch('/requests',{
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(formData)
+    })
+    .then(r => r.json())
+    .then( () => {
+        setShowModal(false)
+        setShowConfirmationModal(true)
+        setSelectedDate(new Date());
+        setStartTime("");
+        setEndTime("");
+        setNotes("");
+        setSessionType("")
+    })
+}
+
     return (
         <div>
             <Row className="m-4">
@@ -60,18 +102,18 @@ const userCards = users.map(user =>{
                         <Form>
                             <Form.Group className="mb-3">
                                 <Form.Label>Date</Form.Label>
-                                <Form.Control type="date"/>
+                                <Form.Control type="date" value={selectedDate} onChange={e => setSelectedDate(e.target.value)}/>
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label>Start Time</Form.Label>
-                                <Form.Control type="time"/>
+                                <Form.Control type="time" value={startTime} onChange={e => setStartTime(e.target.value)}/>
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label>End Time</Form.Label>
-                                <Form.Control type="time"/>
+                                <Form.Control type="time" value={endTime} onChange={e => setEndTime(e.target.value)}/>
                             </Form.Group>
-                            <Form.Group as={Row}>
-                                <Form.Label as="legend">
+                            <Form.Group className="mb-3" as={Row}>
+                                <Form.Label >
                                     Session Type:
                                 </Form.Label>
                                 <Col  className="radio-buttons d-flex align-items-center">
@@ -104,15 +146,37 @@ const userCards = users.map(user =>{
                                     />
                                 </Col>
                             </Form.Group>
+                            <Form.Group as={Row}>
+                                <Form.Label>Notes:</Form.Label>
+                                <Col sm="10">
+                                    <Form.Control 
+                                        as="textarea" 
+                                        rows={3} 
+                                        value={notes} 
+                                        onChange={e => setNotes(e.target.value)} 
+                                    />
+                                </Col>
+                        </Form.Group>
                         </Form>
                     </Modal.Body>
 
                     <Modal.Footer>
                         <Button variant="secondary" onClick={() => setShowModal(false)}>Close</Button>
-                        <Button variant="primary">Book</Button>
+                        <Button variant="primary" onClick={handleBooking}>Book</Button>
                     </Modal.Footer>
                 </Modal>
             )}
+            <Modal show={showConfirmationModal} onHide={() => setShowConfirmationModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Confirmation</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    You've sent a Booking Request to {selectedUser?.username}!
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowConfirmationModal(false)}>Close</Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     )
 }
