@@ -1,7 +1,7 @@
 import {Button, Image, Col, Row, Form, Card, Container, ToggleButton, ToggleButtonGroup} from 'react-bootstrap'
 import {useState, useEffect, useContext, useRef} from "react"
 import {UserContext} from "../UserProvider"
-import moment from 'moment';
+import moment from 'moment'
 import  "../Account.css"
 
 function Account({navigate}){
@@ -9,8 +9,10 @@ function Account({navigate}){
     const [editMode, setEditMode] = useState(false)
     const [username, setUsername] = useState(user?.username)
     const [location, setLocation] = useState(user?.location)
-    const [isReader, setIsReader] = useState(false)
-    const [availability, setAvailability] = useState([] || 'None Specified')
+    const [isReader, setIsReader] = useState(user?.is_available_as_reader)
+    const [startTime, setStartTime] = useState(new Date())
+    const [endTime, setEndTime] = useState(new Date())
+    const [availability, setAvailability] = useState([])
     const [showAvailabilityForm, setShowAvailabilityForm] = useState(false)
     const [newAvailability, setNewAvailability] = useState({ day: "", start: "", end: ""})
     const [gender, setGender] = useState(user?.gender || 'None Specified')
@@ -23,18 +25,45 @@ function Account({navigate}){
         setUsername(user?.username)
         setLocation(user?.location)
         setGender(user?.gender)
-        setIsReader(user?.isReader)
-        setAvailability(user?.availability)
-        setSessionType(user?.session.Type)
+        
+        if (user && user.id) { 
+            fetchUserDetails(user.id)
+        }
+
     }, [user])
+
+    const fetchUserDetails = (userId) => {
+        fetch(`/users/${userId}`)
+            .then(response => response.json())
+            .then(data => {
+                
+                setGender(data.gender);
+                setIsReader(data.is_available_as_reader);
+                setAvailability(data.availabilities);
+                setSessionType({
+                    inPerson: data.available_in_person,
+                    virtual: data.available_virtual,
+                    coaching: data.available_coaching
+                })
+            })
+            .catch(error => console.error('There was a problem with the request:', error));
+    };
+
 
     const handleUpdate = () => {
         const formData = new FormData()
 
         formData.append('username', username)
         formData.append('location', location)
+        formData.append('is_available_as_reader', isReader)
+        formData.append('gender', gender)
+        formData.append('available_in_person', sessionType.inPerson);
+        formData.append('available_virtual', sessionType.virtual);
+        formData.append('available_coaching', sessionType.coaching);
         if (password) formData.append('password', password)
         if (profileImage) formData.append('profile_image', profileImage)
+        
+    
 
         fetch(`/users/${user.id}`, {
             method: "PATCH",
@@ -57,6 +86,15 @@ function Account({navigate}){
             if (data.profile_image){
                 setProfileImage(data.profile_image)
             }
+            if (data.is_available_as_reader !== undefined) {  
+                setIsReader(data.is_available_as_reader);
+            }
+            if (data.gender){
+                setGender(data.gender)
+            }
+            if (data.available_in_person){
+                setSessionType(data.available_in_person)
+            }
             setUser(data)
             setEditMode(false)
         })
@@ -76,31 +114,80 @@ function Account({navigate}){
             })
     }
 
+    const handleDeleteAvailability = (availabilityToDelete, e) => {
+        e.preventDefault()
 
-
-    const formatAvailability = (availability) => {
-    const groupedByDay = {};
-    
-    availability.forEach(avail => {
-        const day = moment(avail.start_time).format('dddd')
-        const startTime = moment(avail.start_time).format('h:mm A')
-        const endTime = moment(avail.end_time).format('h:mm A')
-
-        if (!groupedByDay[day]) {
-        groupedByDay[day] = []
+        fetch(`/availabilities/${availabilityToDelete.id}`, {
+            method: 'DELETE' })
+            .then( r => {
+                if(r.ok) {
+                    setAvailability(prevAvailability => prevAvailability.filter(a => a.id !== availabilityToDelete.id));
+                } else {
+                    console.log("Failed to delete availability")
+                }
+            })
+            .catch(error => console.error('Issuing with deleting:', error))
         }
         
-        groupedByDay[day].push(`${startTime}-${endTime}`)
-    });
+
+    const formatAvailability = (availability) => {
+        
+    const groupedByDay = {};
+    
+    if (availability && Array.isArray(availability)){
+        availability.forEach(avail => {
+            const day = avail.day_of_week
+            const startTime = moment(avail.start_time, "HH:mm").format('h:mm A')
+            const endTime = moment(avail.end_time, "HH:mm").format('h:mm A')
+
+            if (!groupedByDay[day]) {
+            groupedByDay[day] = []
+            }
+            
+            groupedByDay[day].push(`${startTime}-${endTime}`)
+        })}
 
     const availabilityString = Object.keys(groupedByDay)
         .map(day => {
         const times = groupedByDay[day].join(", ")
-        return `${day} ${times}`
+        return `${day}s: ${times}`
         })
         .join(", ")
 
     return availabilityString
+    }
+
+
+    const handleNewAvail = (e) => {
+        e.preventDefault()
+        const payload = {
+        user_id: user.id,
+        day_of_week: newAvailability.day,
+        start_time: newAvailability.start,
+        end_time: newAvailability.end
+    }
+
+    fetch('/availabilities', {
+        method: 'POST',
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(payload)
+    })
+    .then(r => {
+        if (r.ok) {
+            return r.json()
+        } else {
+            throw new Error('Failed to create availability')
+        }
+    })
+    .then(data => {
+        console.log('Success:', data)
+        setAvailability([...availability, data])
+        setShowAvailabilityForm(!showAvailabilityForm)
+    })
+    .catch(error => {
+        console.error('Error:', error)
+    })
+    
     }
 
     return (
@@ -147,40 +234,158 @@ function Account({navigate}){
                                             <Form.Group>
                                                 <Form.Label>Gender</Form.Label>
                                                 <Form.Control as= "select" value={gender} onChange={e => setGender(e.target.value)}>
+                                                    <option value="">Select a gender</option>
                                                     <option value="">Prefer not to choose</option>
                                                     <option value="Male">Male</option>
                                                     <option value="Female">Female</option>
                                                 </Form.Control>
                                             </Form.Group>
+                                            <Form.Group className="d-flex align-items-center">
+                                            <Form.Label className="mr-3">Are you available to read?</Form.Label>
                                             <ToggleButtonGroup type="checkbox">
                                                 <ToggleButton
-                                                    variant='outline-primary'
-                                                    value={isReader ? 'Yes' : 'No'}
-                                                    onClick={() => setIsReader(!isReader)}
-                                                    >
-                                                        Available to Read
-                                                    </ToggleButton>
+                                                variant={isReader ? 'outline-primary active' : 'outline-primary'}
+                                                value={isReader}
+                                                onClick={() => setIsReader(!isReader)}
+                                                >
+                                                {isReader ? 'Yes' : 'No'}
+                                                </ToggleButton>
                                             </ToggleButtonGroup>
+                                            </Form.Group>
 
                                             {isReader && (
                                                 <div>
+                                                    <Form.Group>
+                                                        <h5>Available for Sessions-Types:</h5>
+                                                        <Form.Check 
+                                                            type="checkbox"
+                                                            label="In-Person"
+                                                            checked={sessionType.inPerson}
+                                                            onChange={() => setSessionType({ ...sessionType, inPerson: !sessionType.inPerson })}
+                                                        />
+                                                        <Form.Check 
+                                                            type="checkbox"
+                                                            label="Virtual"
+                                                            checked={sessionType.virtual}
+                                                            onChange={() => setSessionType({ ...sessionType, virtual: !sessionType.virtual })}
+                                                        />
+                                                        <Form.Check 
+                                                            type="checkbox"
+                                                            label="Coaching"
+                                                            checked={sessionType.coaching}
+                                                            onChange={() => setSessionType({ ...sessionType, coaching: !sessionType.coaching })}
+                                                        />
+                                                    </Form.Group>
                                                     <h5> Current Availability</h5>
                                                     <ul>
-                                                        {availability.map((a, index) => (
-                                                            <li key={index}>
-                                                                {formatAvailability(a)} <button onClick={() => handleDeleteAvailability(a)}>🗑</button>
-                                                            </li>
-                                                        ))}
+                                                        {availability && availability.length > 0 ? (
+                                                            availability.map((a, index) => (
+                                                                <li key={index}>
+                                                                    {formatAvailability([a])} 
+                                                                    <button className='garbage-can' type="button" onClick={(e) => handleDeleteAvailability(a,e)}>🗑</button>
+                                                                </li>
+                                                            ))
+                                                        ) : (
+                                                            <li><p>No availability set.</p></li>
+                                                    )}
                                                     </ul>
                                                     <Button onClick={() => setShowAvailabilityForm(!showAvailabilityForm)}>+ Add New</Button>
+                                                    
+                                                    
                                                     {showAvailabilityForm && (
                                                         <Form>
                                                             <Form.Group>
                                                                 <Form.Label>Day of Week</Form.Label>
                                                                 <Form.Control as="select" value={newAvailability.day} onChange={e => setNewAvailability({ ...newAvailability, day: e.target.value })}>
-                                                                    <option value="Monday">Monday</option>
+                                                                <option value="">Select Day</option>
+                                                                <option value="Monday">Monday</option>
+                                                                <option value="Tuesday">Tuesday</option>
+                                                                <option value="Wednesday">Wednesday</option>
+                                                                <option value="Thursday">Thursday</option>
+                                                                <option value="Friday">Friday</option>
+                                                                <option value="Saturday">Saturday</option>
+                                                                <option value="Sunday">Sunday</option>
                                                                 </Form.Control>
                                                             </Form.Group>
+                                                            <Form.Group>
+                                                                <Form.Label>Start Time</Form.Label>
+                                                                <Form.Control as="select" value={newAvailability.start} onChange={e => setNewAvailability({ ...newAvailability, start: e.target.value })}>
+                                                                <option value="">Select Start Time</option>
+                                                                <option value="07:00">07:00 AM</option>
+                                                                <option value="07:30">07:30 AM</option>
+                                                                <option value="08:00">08:00 AM</option>
+                                                                <option value="08:30">08:30 AM</option>
+                                                                <option value="09:00">09:00 AM</option>
+                                                                <option value="09:30">09:30 AM</option>
+                                                                <option value="10:00">10:00 AM</option>
+                                                                <option value="10:30">10:30 AM</option>
+                                                                <option value="11:00">11:00 AM</option>
+                                                                <option value="11:30">11:30 AM</option>
+                                                                <option value="12:00">12:00 PM</option>
+                                                                <option value="12:30">12:30 PM</option>
+                                                                <option value="13:00">01:00 PM</option>
+                                                                <option value="13:30">01:30 PM</option>
+                                                                <option value="14:00">02:00 PM</option>
+                                                                <option value="14:30">02:30 PM</option>
+                                                                <option value="15:00">03:00 PM</option>
+                                                                <option value="15:30">03:30 PM</option>
+                                                                <option value="16:00">04:00 PM</option>
+                                                                <option value="16:30">04:30 PM</option>
+                                                                <option value="17:00">05:00 PM</option>
+                                                                <option value="17:30">05:30 PM</option>
+                                                                <option value="18:00">06:00 PM</option>
+                                                                <option value="18:30">06:30 PM</option>
+                                                                <option value="19:00">07:00 PM</option>
+                                                                <option value="19:30">07:30 PM</option>
+                                                                <option value="20:00">08:00 PM</option>
+                                                                <option value="20:30">08:30 PM</option>
+                                                                <option value="21:00">09:00 PM</option>
+                                                                <option value="21:30">09:30 PM</option>
+                                                                <option value="22:00">10:00 PM</option>
+                                                                
+                                                                </Form.Control>
+                                                            </Form.Group>
+
+                                                            <Form.Group>
+                                                                <Form.Label>End Time</Form.Label>
+                                                                <Form.Control as="select" value={newAvailability.end} onChange={e => setNewAvailability({ ...newAvailability, end: e.target.value })}>
+                                                                    <option value="">Select End Time</option>
+                                                                    <option value="07:00">07:00 AM</option>
+                                                                    <option value="07:30">07:30 AM</option>
+                                                                    <option value="08:00">08:00 AM</option>
+                                                                    <option value="08:30">08:30 AM</option>
+                                                                    <option value="09:00">09:00 AM</option>
+                                                                    <option value="09:30">09:30 AM</option>
+                                                                    <option value="10:00">10:00 AM</option>
+                                                                    <option value="10:30">10:30 AM</option>
+                                                                    <option value="11:00">11:00 AM</option>
+                                                                    <option value="11:30">11:30 AM</option>
+                                                                    <option value="12:00">12:00 PM</option>
+                                                                    <option value="12:30">12:30 PM</option>
+                                                                    <option value="13:00">01:00 PM</option>
+                                                                    <option value="13:30">01:30 PM</option>
+                                                                    <option value="14:00">02:00 PM</option>
+                                                                    <option value="14:30">02:30 PM</option>
+                                                                    <option value="15:00">03:00 PM</option>
+                                                                    <option value="15:30">03:30 PM</option>
+                                                                    <option value="16:00">04:00 PM</option>
+                                                                    <option value="16:30">04:30 PM</option>
+                                                                    <option value="17:00">05:00 PM</option>
+                                                                    <option value="17:30">05:30 PM</option>
+                                                                    <option value="18:00">06:00 PM</option>
+                                                                    <option value="18:30">06:30 PM</option>
+                                                                    <option value="19:00">07:00 PM</option>
+                                                                    <option value="19:30">07:30 PM</option>
+                                                                    <option value="20:00">08:00 PM</option>
+                                                                    <option value="20:30">08:30 PM</option>
+                                                                    <option value="21:00">09:00 PM</option>
+                                                                    <option value="21:30">09:30 PM</option>
+                                                                    <option value="22:00">10:00 PM</option>
+                                                                    <option value="22:30">10:30 PM</option>
+                                                                    <option value="23:00">11:00 PM</option>
+                                                                </Form.Control>
+                                                            </Form.Group>
+                                                            <Button onClick={e => handleNewAvail(e)}>Submit Availability </Button>
                                                         </Form>
                                                     )}
                                                 </div>
@@ -204,12 +409,33 @@ function Account({navigate}){
                                             </div>
                                             <div>
                                                 <span className="account-label">Available to Read: </span>
-                                                <span>{user?.availableToRead ? 'Yes' : 'No'}</span>
+                                                <span>{isReader ? 'Yes' : 'No'}</span>
                                             </div>
-                                            <div>
-                                                <span>Current Availability: </span>
-                                                <span>{formatAvailability(availability)}</span>
-                                            </div>
+                                            {isReader ? ( 
+                                                <div>
+                                                    <div>
+                                                        <span className="account-label">Session Types: </span>
+                                                        <span>
+                                                            {sessionType.inPerson && "In-Person"}
+                                                            {sessionType.inPerson && (sessionType.virtual || sessionType.coaching) && ", "}
+                                                            {sessionType.virtual && "Virtual"}
+                                                            {sessionType.virtual && sessionType.coaching && ", "}
+                                                            {sessionType.coaching && "Coaching"}
+                                                        </span>
+                                                    </div>
+                                                    <div>
+                                                        <span className="account-label">Current Availability: </span>
+                                                        <span>
+                                                            {availability && availability.length > 0 ? (
+                                                                formatAvailability(availability)
+                                                            ) : (
+                                                                "N/A"
+                                                            )}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            ) : null}
+                                            
                                         </div>
                                         
                                     )}

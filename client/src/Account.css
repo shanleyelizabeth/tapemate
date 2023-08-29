@@ -27,6 +27,10 @@
     
 
 }
+.garbage-can {
+    background-color: transparent !important;
+    border-color: transparent !important;
+}
 
 .delete-account-button:hover {
     background-color:rgb(195, 26, 26) !important;

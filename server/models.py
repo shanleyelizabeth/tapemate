@@ -10,10 +10,7 @@ class User(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, nullable=False, unique=True)
     _password_hash= db.Column(db.String)
-    location = db.Column(db.String)
-    availability_days = db.Column(db.String)
-    availability_start_time = db.Column(db.Time) 
-    availability_end_time = db.Column(db.Time) 
+    location = db.Column(db.String) 
     profile_image = db.Column(db.String, default=None)
     is_available_as_reader = db.Column(db.Boolean, default=True)
     gender = db.Column(db.String, nullable=True)
@@ -46,6 +43,19 @@ class User(db.Model, SerializerMixin):
 
     availabilities = db.relationship('Availability', back_populates='user')
 
+    def to_custom_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'location': self.location,
+            'profile_image': self.profile_image,
+            'is_available_as_reader': self.is_available_as_reader,
+            'gender': self.gender,
+            'available_in_person': self.available_in_person,
+            'available_virtual': self.available_virtual,
+            'available_coaching': self.available_coaching
+    }
+
 
     def __repr__(self):
         return f'User {self.username}, ID {self.id}'
@@ -55,10 +65,19 @@ class Availability(db.Model, SerializerMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    start_time = db.Column(db.DateTime, nullable=False)
-    end_time = db.Column(db.DateTime, nullable=False)
+    day_of_week = db.Column(db.String)
+    start_time = db.Column(db.String)
+    end_time = db.Column(db.String)
 
     user = db.relationship('User', back_populates='availabilities')
+
+    def to_custom_dict(self):
+        return {
+            'id': self.id,
+            'day_of_week': self.day_of_week,
+            'start_time': self.start_time,
+            'end_time': self.end_time,
+    }
 
     def __repr__(self):
         return f"Availability(id={self.id}, user_id={self.user_id}, start_time={self.start_time}, end_time={self.end_time})"
