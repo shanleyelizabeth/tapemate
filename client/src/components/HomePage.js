@@ -35,6 +35,7 @@ const userCards = users.map(user =>{
                 <Col className="d-flex">
                 <UserCard 
                             key={user.id}
+                            id={user.id}
                             username={user.username}
                             profile_image={user.profile_image}
                             availabilities={user.availabilities}
@@ -61,9 +62,11 @@ const formatDate = (inputDate) => {
 
 const handleBooking = (e) => {
     e.preventDefault()
-    const formattedDate = formatDate(selectedDate)
+    const formattedDate = selectedDate.toISOString().split('T')[0];
+
     const formData = {
         date: formattedDate,
+        reader_id: selectedUser.id,
         start_time: startTime,
         end_time: endTime,
         notes: notes,
@@ -102,7 +105,7 @@ const handleBooking = (e) => {
                         <Form>
                             <Form.Group className="mb-3">
                                 <Form.Label>Date</Form.Label>
-                                <Form.Control type="date" value={selectedDate} onChange={e => setSelectedDate(e.target.value)}/>
+                                <Form.Control type="date" value={selectedDate.toISOString().split('T')[0]} onChange={e => setSelectedDate(new Date(e.target.value))}/>
                             </Form.Group>
                             <Form.Group className="mb-3">
                                 <Form.Label>Start Time</Form.Label>

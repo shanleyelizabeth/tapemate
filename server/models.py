@@ -112,6 +112,7 @@ class Request(db.Model, SerializerMixin):
         return {
             'id': self.id,
             'actor_id': self.actor_id,
+            'reader_id': self.reader_id,
             'notes': self.notes,
             'date': self.date.strftime('%Y-%m-%d'),  
             'start_time': self.start_time.strftime('%H:%M:%S'),
@@ -120,7 +121,10 @@ class Request(db.Model, SerializerMixin):
             'session_type': self.session_type,
             'actor_username': self.actor.username if self.actor else None,
             'actor_profile_image': self.actor.profile_image if self.actor else None,
-            'actor_location': self.actor.location if self.actor else None
+            'actor_location': self.actor.location if self.actor else None,
+            'reader_username': self.reader.username if self.reader else None,  # Add this line
+            'reader_profile_image': self.reader.profile_image if self.reader else None,  # Add this line
+            'reader_location': self.reader.location if self.reader else None
         }
 
 

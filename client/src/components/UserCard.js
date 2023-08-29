@@ -4,7 +4,7 @@ import {UserContext} from '../UserProvider'
 import moment from 'moment'
 import "../Card.css"
 
-function UserCard({ username, profile_image, availabilities, gender, location, virtual, in_person, coaching, setSelectedUser, openModal}) {
+function UserCard({ username, id, profile_image, availabilities, gender, location, virtual, in_person, coaching, setSelectedUser, openModal}) {
 
 
 
@@ -61,6 +61,7 @@ function UserCard({ username, profile_image, availabilities, gender, location, v
 
     const handleClick= () => {
         const user = { 
+            id,
             username, 
             profile_image, 
             availabilities,

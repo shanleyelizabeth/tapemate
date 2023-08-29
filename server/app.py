@@ -5,6 +5,7 @@ from flask import request, make_response, session
 from datetime import datetime
 from werkzeug.utils import secure_filename
 import os
+from sqlalchemy import or_
 
 from models import User, Session, Request, Availability
 
@@ -32,6 +33,7 @@ class Requests(Resource):
         data = request.get_json()
         
         actor_id = session.get("user_id", None)
+        
 
         if not actor_id:
             return make_response({'error': 'Unauthorized user or Session expired'}, 401)
@@ -45,13 +47,14 @@ class Requests(Resource):
         start_time_str = data['start_time']
         end_time_str = data['end_time']
 
-        date_obj = datetime.strptime(date_str, "%B %d, %Y").date()
+        date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
         start_time_obj = datetime.strptime(start_time_str, "%H:%M").time()
         end_time_obj = datetime.strptime(end_time_str, "%H:%M").time()
 
         try:
             new_request = Request(
                 actor_id=session['user_id'],
+                reader_id=data.get("reader_id", None),
                 notes=data.get('notes', None),
                 date=date_obj,
                 start_time=start_time_obj,
@@ -227,6 +230,35 @@ def get_homepage_users():
 
 
         return make_response(user_dicts, 200)
+    except Exception as e:
+        return make_response({"error": str(e)}, 500)
+    
+@app.route('/sessions_requests', methods=['GET'])
+def get_sessions_requests():
+    try:
+        current_user_id = session.get("user_id", None)
+
+        if not current_user_id:
+            return make_response({'error': 'Unauthorized user or Session expired'}, 401)
+        
+        sessions = Session.query.filter(
+            or_(Session.actor_id == current_user_id, Session.reader_id == current_user_id)).all()
+
+        requests = Request.query.filter(
+            or_(Request.actor_id == current_user_id, Request.reader_id == current_user_id)).all()
+        
+        session_dicts = [s.to_custom_dict() for s in sessions]
+        request_dicts = [r.to_custom_dict() for r in requests]
+
+        for s in session_dicts:
+            s['type'] = 'session_actor' if s['actor_id'] == current_user_id else 'session_reader'
+
+        for r in request_dicts:
+            r['type'] = 'request_actor' if r['actor_id'] == current_user_id else 'request_reader'
+
+        sessions_requests = session_dicts + request_dicts
+
+        return make_response({'data': sessions_requests}, 200)
     except Exception as e:
         return make_response({"error": str(e)}, 500)
         

@@ -25,34 +25,94 @@ function Sessions({navigate}){
         calendarApi.changeView(newView);
     }
 
+    const getEventTitle = (item, isActor) => {
+        if (item.type === 'session_actor') {
+            return `Acting Session With ${item.reader.username}`;
+        }
+        if (item.type === 'session_reader') {
+            return `Reading Session For ${item.actor.username}`;
+        }
+        if (item.type === 'request_actor') {
+            return `Pending Acting Request to ${item.reader_username}`;
+        }
+        if (item.type === 'request_reader') {
+            return `${item.actor_username} is requesting you as a Reader`;
+        }
+    }
+
+    const getColor = (item, isActor) => {
+        if (item.type === 'session_actor') {
+            return '#BFD5A5'
+        }
+        if (item.type === 'session_reader') {
+            return '#A5C2F7'
+        }
+        if (item.type === 'request_actor') {
+            return 'grey'
+        }
+        if (item.type === 'request_reader') {
+            return 'red'
+        }
+    }
+
+    const getProfileImage = (item, isActor) => {
+        if (item.type.startsWith('session')) {
+            return isActor ? item.reader?.profile_image : item.actor?.profile_image;
+        } else if (item.type.startsWith('request')) {
+            return isActor ? item.reader_profile_image : item.actor_profile_image;
+        }
+        return 'default_image_url';
+    }
+
+    const getActorName = (item, isActor) => {
+        if (item.type.startsWith('session')) {
+            return isActor ? item.reader?.username : item.actor?.username
+        } else if (item.type.startsWith('request')) {
+            return isActor ? item.reader_username : item.actor_username
+        }
+        return 'Unknown';
+    }
+
+    const getReaderName = (item, isActor) => {
+        if (item.type.startsWith('session')) {
+            return isActor ? item.actor?.username : item.reader?.username
+        } else if (item.type.startsWith('request')) {
+            return isActor ? item.actor_username : item.reader_username
+        }
+        return 'Unknown'
+    }
+
     useEffect(() => {
-        fetch('/sessions')
+        fetch('/sessions_requests')
         .then(r => r.json())
-        .then((sessions) => {
+        .then((data) => {console.log("Parsed JSON: ", data)
 
-            const filteredSessions = sessions.filter((session) => session.actor_id === user?.id || session.reader_id === user?.id)
+            const items = data.data
+            const calendarData = items.map((item) => {
+                const isActor = item.actor_id === user?.id
 
-            const calendarData = filteredSessions.map((session) => ({
-                id: session.id,
-                title: session.actor_id === user?.id ? 
-                    `Acting Session With ${session.reader.username}` : 
-                    `Reading Session For ${session.actor.username}`,
-                start: new Date(session.date + 'T' + session.start_time),
-                end: new Date(session.date + 'T' + session.end_time),
-                extendedProps: {
-                    
-                    notes: session.notes,
-                    photo: session.actor_id === user?.id ? session.reader.profile_image : session.actor.profile_image,
-                    name: session.actor.username,
-                    session_type: session.session_type,
-                    reader_name: session.reader.username,
-                },
-                color: session.actor_id === user?.id ? '#BFD5A5' : '#A5C2F7'
-            }))
+                return {
+                    id: item.id,
+                    title: getEventTitle(item, isActor),
+                    start: new Date(item.date + 'T' + item.start_time),
+                    end: new Date(item.date + 'T' + item.end_time),
+                    extendedProps: {
+                        notes: item.notes,
+                        photo: getProfileImage(item, isActor),
+                        name: getActorName(item, isActor),
+                        session_type: item.session_type,
+                        reader_name: getReaderName(item, isActor),
+                        type: item.type,
+                        status: item.status,
+                    },
+                    color: getColor(item, isActor)
+                }
+            })
             setSessions(calendarData)
         })
+        .catch(error => console.log('Fetch Error: ', error))
         
-    }, [user?.id])
+        }, [user?.id])
 
     const handleEventClick = (info) => {
         const {id, title, startStr, endStr, extendedProps} = info.event
@@ -60,12 +120,17 @@ function Sessions({navigate}){
         setSelectedInfo({
             id,
             title,
+            type: extendedProps.type,
             startStr: moment(info.event.startStr).format('MMMM Do YYYY, h:mm a'),
             endStr: moment(info.event.endStr).format('h:mm a'),
             extendedProps
         })
-        console.log('selected info:', selectedInfo)
+
         setShowInfo(true)
+    }
+
+    const handleAcceptRequest = () => {
+
     }
 
     const handleNotes = () => {
@@ -149,20 +214,25 @@ function Sessions({navigate}){
                                     Additional Notes: <br />
                                     {selectedInfo?.extendedProps.notes}
                                 </Card.Text>
-                                {clicked ? 
-                                    (<Form>
-                                        <Form.Control
+                                {console.log("Debug Type:", selectedInfo?.extendedProps.type)}
+                                {console.log("Debug Status:", selectedInfo?.extendedProps.status)}
+
+                                {selectedInfo?.type === 'request_reader' && selectedInfo?.extendedProps.status === 'open' ? (
+                                    <Button onClick={handleAcceptRequest}>Accept Reading</Button>
+                                ) : (selectedInfo?.type === 'session_reader' || selectedInfo?.type === 'session_actor') ? (
+                                    clicked ? (
+                                        <Form>
+                                            <Form.Control
                                                 as="textarea"
                                                 value={notes}
                                                 onChange={e => setNotes(e.target.value)}
                                             />
-                                        <Button onClick={handleNotes}>Add Note</Button>
-                                    </Form>) : 
-                                    (<Button 
-                                        onClick={() => {setClicked(!clicked)}}
-
-                                        >Add Session Notes</Button>) 
-                                }
+                                            <Button onClick={handleNotes}>Add Note</Button>
+                                        </Form>
+                                    ) : (
+                                        <Button onClick={() => {setClicked(!clicked)}}>Add Session Notes</Button>
+                                    )
+                                ) : null}
                                 
                             </Card.Body>
                         </>) : 
@@ -178,3 +248,9 @@ function Sessions({navigate}){
 }
 
 export default Sessions
+
+
+
+
+// session.actor_id === user?.id ? '#BFD5A5' : '#A5C2F7'
+//             const filteredSessions = sessions.filter((session) => session.actor_id === user?.id || session.reader_id === user?.id)
