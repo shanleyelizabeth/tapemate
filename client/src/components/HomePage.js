@@ -16,6 +16,8 @@ function HomePage(){
     const [startTime, setStartTime] = useState("")
     const [endTime, setEndTime] = useState("")
     const [showConfirmationModal, setShowConfirmationModal] = useState(false)
+    const [genderFilter, setGenderFilter] = useState("")
+    const [availabilityFilter, setAvailabilityFilter] = useState("")
 
     useEffect(() => {
         fetch('/homepage_users')
@@ -24,13 +26,20 @@ function HomePage(){
     },[])
 
     const handleOpenModal = (user) => {
-        setSelectedUser(user);
-        setShowModal(true);
+        setSelectedUser(user)
+        setShowModal(true)
     }
 
+    const filteredUsers = users.filter(user => {
+        return (genderFilter === "" || user.gender.toLowerCase() === genderFilter.toLowerCase()) &&
+                (availabilityFilter === "" || user.availabilities.some(avail => avail.day_of_week.toLowerCase() === availabilityFilter.toLowerCase()));
+    })
+
+    
 
 
-const userCards = users.map(user =>{
+
+const userCards = filteredUsers.map(user =>{
             return (
                 <Col className="d-flex">
                 <UserCard 
@@ -85,6 +94,34 @@ const handleBooking = (e) => {
 
     return (
         <div>
+            
+            <div>
+            <Form.Group controlId="genderSelect">
+                <Form.Label>Gender</Form.Label>
+                <Form.Select value={genderFilter} onChange={e => setGenderFilter(e.target.value)}>
+                <option value="All">All</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                </Form.Select>
+            </Form.Group>
+
+            <Form.Group controlId="availabilitySearch">
+                <Form.Label>Availability</Form.Label>
+                <Form.Select 
+                    value={availabilityFilter} 
+                    onChange={e => setAvailabilityFilter(e.target.value)}
+                >
+                    <option value="" disabled>Select a day...</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                    <option value="Sunday">Sunday</option>
+                </Form.Select>
+            </Form.Group>
+            </div>
             <Row className="m-4">
             {userCards}
             </Row>
