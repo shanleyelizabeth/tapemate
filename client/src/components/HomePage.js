@@ -30,6 +30,13 @@ function HomePage(){
         setShowModal(true)
     }
 
+    const handleCheckboxChange = (key, isChecked) => {
+        setSessionTypeFilter(prevState => ({
+            ...prevState,
+            [key]: isChecked
+        }));
+    }
+
     const filteredUsers = users.filter(user => {
         return (genderFilter === "" || genderFilter === "All" || user.gender.toLowerCase() === genderFilter.toLowerCase()) &&
                 (availabilityFilter === "" || user.availabilities.some(avail => avail.day_of_week.toLowerCase() === availabilityFilter.toLowerCase())) &&
@@ -137,15 +144,15 @@ const handleBooking = (e) => {
 
                         <Dropdown.Menu className="custom-dropdown-menu">
                         <Dropdown.Item as="button" className="custom-dropdown-item">
-                            <input type="checkbox" id="virtual" value="Virtual" />
+                            <input type="checkbox" id="virtual" value="Virtual" onChange={(e) => handleCheckboxChange('virtual', e.target.checked)}/>
                             <label htmlFor="virtual"> Virtual</label>
                         </Dropdown.Item>
                         <Dropdown.Item as="button" className="custom-dropdown-item">
-                            <input type="checkbox" id="in-person" value="In-Person" />
+                            <input type="checkbox" id="in-person" value="In-Person" onChange={(e) => handleCheckboxChange('inPerson', e.target.checked)}/>
                             <label htmlFor="in-person"> In-Person</label>
                         </Dropdown.Item>
                         <Dropdown.Item as="button" className="custom-dropdown-item">
-                            <input type="checkbox" id="coaching" value="Coaching" />
+                            <input type="checkbox" id="coaching" value="Coaching" onChange={(e) => handleCheckboxChange('coaching', e.target.checked)} />
                             <label htmlFor="coaching"> Coaching</label>
                         </Dropdown.Item>
                         </Dropdown.Menu>
@@ -212,7 +219,7 @@ const handleBooking = (e) => {
                             </Form.Group>
                             <Form.Group as={Row}>
                                 <Form.Label>Notes:</Form.Label>
-                                <Col sm="10">
+                                <Col sm="12">
                                     <Form.Control 
                                         as="textarea" 
                                         rows={3} 
@@ -226,7 +233,7 @@ const handleBooking = (e) => {
 
                     <Modal.Footer>
                         <Button variant="secondary" onClick={() => setShowModal(false)}>Close</Button>
-                        <Button variant="primary" onClick={handleBooking}>Book</Button>
+                        <Button variant="primary" className="book-button" onClick={handleBooking}>Book</Button>
                     </Modal.Footer>
                 </Modal>
             )}

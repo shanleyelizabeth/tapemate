@@ -147,14 +147,11 @@ function Account({navigate}){
             groupedByDay[day].push(`${startTime}-${endTime}`)
         })}
 
-    const availabilityString = Object.keys(groupedByDay)
-        .map(day => {
-        const times = groupedByDay[day].join(", ")
-        return `${day}s: ${times}`
-        })
-        .join(", ")
-
-    return availabilityString
+        return Object.keys(groupedByDay).map(day => (
+            <div className="availability-item" key={day}>
+                {day}s: {groupedByDay[day].join(", ")}
+            </div>
+        ))
     }
 
 
@@ -197,41 +194,48 @@ function Account({navigate}){
                     <Card className="custom-card">
                         <Card.Body>
                             <Row>
-                                <Col xs={4}>
-                                    <Image src={user?.profile_image} fluid rounded style={{height: '350px'}}/>
-                                    {editMode && <Button 
-                                                    variant="outline-secondary" 
-                                                    size="sm" 
-                                                    className="my-2"
-                                                    onClick={() => {fileInputRef.current.click()}}
-                                                    >
-                                                        Update Profile Picture</Button>}
+                                <Col xs={3}>
+                                    <Image src={user?.profile_image} fluid rounded style={{height: '250px'}}/>
+                                    {editMode && <div>
+                                                    <Button 
+                                                        variant="outline-secondary" 
+                                                        size="sm" 
+                                                        className="my-2"
+                                                        onClick={() => {fileInputRef.current.click()}}
+                                                        >
+                                                            Update Profile Picture</Button>
+                                                
+                                                    
+                                                    </div>
+                                            }
                                     <input 
                                     type="file" 
                                     ref={fileInputRef}
                                     style={{ display: 'none' }}
                                     onChange={e => setProfileImage(e.target.files[0])} 
                                     />
+                                    
                                 </Col>
 
-                                <Col xs={4} className="d-flex align-items-center justify-content-center">
+
+                                <Col xs={8} className="d-flex align-items-center justify-content-center">
                                     {editMode ? (
                                         <Form>
-                                            <Form.Group >
+                                            <Form.Group className="inputs">
                                                 <Form.Label >Update Username:</Form.Label>
                                                 <Form.Control type="text" value={username} onChange={e => setUsername(e.target.value)}/>
                                             </Form.Group>
                                                 
-                                            <Form.Group>
+                                            <Form.Group className="inputs">
                                                 <Form.Label>Update Location:</Form.Label>
                                                 <Form.Control type="text" value={location} onChange={e => setLocation(e.target.value)}/>
 
                                             </Form.Group>
-                                            <Form.Group>
+                                            <Form.Group className="inputs">
                                                 <Form.Label>Update Password:</Form.Label>
                                                 <Form.Control type="text" value={password} onChange={e => setPassword(e.target.value)}/>
                                             </Form.Group>
-                                            <Form.Group>
+                                            <Form.Group className="inputs">
                                                 <Form.Label>Gender</Form.Label>
                                                 <Form.Control as= "select" value={gender} onChange={e => setGender(e.target.value)}>
                                                     <option value="">Select a gender</option>
@@ -240,10 +244,11 @@ function Account({navigate}){
                                                     <option value="Female">Female</option>
                                                 </Form.Control>
                                             </Form.Group>
-                                            <Form.Group className="d-flex align-items-center">
+                                            <Form.Group className="d-flex align-items-center justify-content-center">
                                             <Form.Label className="mr-3">Are you available to read?</Form.Label>
                                             <ToggleButtonGroup type="checkbox">
                                                 <ToggleButton
+                                                className="yes-or-no"
                                                 variant={isReader ? 'outline-primary active' : 'outline-primary'}
                                                 value={isReader}
                                                 onClick={() => setIsReader(!isReader)}
@@ -254,49 +259,52 @@ function Account({navigate}){
                                             </Form.Group>
 
                                             {isReader && (
-                                                <div>
-                                                    <Form.Group>
-                                                        <h5>Available for Sessions-Types:</h5>
-                                                        <Form.Check 
-                                                            type="checkbox"
-                                                            label="In-Person"
-                                                            checked={sessionType.inPerson}
-                                                            onChange={() => setSessionType({ ...sessionType, inPerson: !sessionType.inPerson })}
-                                                        />
-                                                        <Form.Check 
-                                                            type="checkbox"
-                                                            label="Virtual"
-                                                            checked={sessionType.virtual}
-                                                            onChange={() => setSessionType({ ...sessionType, virtual: !sessionType.virtual })}
-                                                        />
-                                                        <Form.Check 
-                                                            type="checkbox"
-                                                            label="Coaching"
-                                                            checked={sessionType.coaching}
-                                                            onChange={() => setSessionType({ ...sessionType, coaching: !sessionType.coaching })}
-                                                        />
-                                                    </Form.Group>
-                                                    <h5> Current Availability</h5>
-                                                    <ul>
-                                                        {availability && availability.length > 0 ? (
-                                                            availability.map((a, index) => (
-                                                                <li key={index}>
-                                                                    {formatAvailability([a])} 
-                                                                    <button className='garbage-can' type="button" onClick={(e) => handleDeleteAvailability(a,e)}>🗑</button>
-                                                                </li>
-                                                            ))
-                                                        ) : (
-                                                            <li><p>No availability set.</p></li>
-                                                    )}
-                                                    </ul>
-                                                    <Button onClick={() => setShowAvailabilityForm(!showAvailabilityForm)}>+ Add New</Button>
-                                                    
-                                                    
-                                                    {showAvailabilityForm && (
+                                                <div className="session-type-div ">
+                                                    <div className="session-type-and-availability">
+                                                        <Form.Group>
+                                                            <h6>Available for Sessions-Types:</h6>
+                                                            <Form.Check 
+                                                                type="checkbox"
+                                                                label="In-Person"
+                                                                checked={sessionType.inPerson}
+                                                                onChange={() => setSessionType({ ...sessionType, inPerson: !sessionType.inPerson })}
+                                                            />
+                                                            <Form.Check 
+                                                                type="checkbox"
+                                                                label="Virtual"
+                                                                checked={sessionType.virtual}
+                                                                onChange={() => setSessionType({ ...sessionType, virtual: !sessionType.virtual })}
+                                                            />
+                                                            <Form.Check 
+                                                                type="checkbox"
+                                                                label="Coaching"
+                                                                checked={sessionType.coaching}
+                                                                onChange={() => setSessionType({ ...sessionType, coaching: !sessionType.coaching })}
+                                                            />
+                                                        </Form.Group>
+                                                        <Form.Group>
+                                                            <h6 className="availability-header"> Current Availability:</h6>
+                                                            <ul>
+                                                                {availability && availability.length > 0 ? (
+                                                                    availability.map((a, index) => (
+                                                                        <li key={index}>
+                                                                            {formatAvailability([a])} 
+                                                                            <button className='garbage-can' type="button" onClick={(e) => handleDeleteAvailability(a,e)}>🗑</button>
+                                                                        </li>
+                                                                    ))
+                                                                ) : (
+                                                                    <li><p>No availability set.</p></li>
+                                                            )}
+                                                            </ul>
+                                                            {showAvailabilityForm ? null : <Button onClick={() => setShowAvailabilityForm(!showAvailabilityForm)}>+ Add New</Button>}
+                                                        </Form.Group>
+                                                    </div>
+                                                    {showAvailabilityForm && 
+                                                    <div className="availability-form">
                                                         <Form>
                                                             <Form.Group>
                                                                 <Form.Label>Day of Week</Form.Label>
-                                                                <Form.Control as="select" value={newAvailability.day} onChange={e => setNewAvailability({ ...newAvailability, day: e.target.value })}>
+                                                                <Form.Control className="avail-form-controls" as="select" value={newAvailability.day} onChange={e => setNewAvailability({ ...newAvailability, day: e.target.value })}>
                                                                 <option value="">Select Day</option>
                                                                 <option value="Monday">Monday</option>
                                                                 <option value="Tuesday">Tuesday</option>
@@ -385,12 +393,14 @@ function Account({navigate}){
                                                                     <option value="23:00">11:00 PM</option>
                                                                 </Form.Control>
                                                             </Form.Group>
-                                                            <Button onClick={e => handleNewAvail(e)}>Submit Availability </Button>
+                                                            <Button className="submit-avail" onClick={e => handleNewAvail(e)}>Submit Availability </Button>
                                                         </Form>
-                                                    )}
+                                                    
+                                                    </div>
+                                                    }
                                                 </div>
                                             )}
-                                            <Button onClick={handleDelete} variant="outline-secondary" size="sm" className="mt-4 delete-account-button">Delete Account</Button>
+                                            
                                         </Form>
                                     ) : (
                                         
@@ -399,21 +409,21 @@ function Account({navigate}){
                                                 <span className="account-label">Username: </span> 
                                                 <span>{username}</span>
                                             </div>
-                                            <div className="info-item d-flex">
+                                            <div className="info-item d-flex align-items-start">
                                                 <span className="account-label">Location: </span>
                                                 <span>{location}</span>
                                             </div>
-                                            <div>
+                                            <div className="info-item d-flex align-items-start">
                                                 <span className="account-label">Gender: </span>
                                                 <span>{gender}</span>
                                             </div>
-                                            <div>
+                                            <div className="info-item d-flex align-items-start">
                                                 <span className="account-label">Available to Read: </span>
                                                 <span>{isReader ? 'Yes' : 'No'}</span>
                                             </div>
                                             {isReader ? ( 
                                                 <div>
-                                                    <div>
+                                                    <div className="info-item d-flex align-items-start">
                                                         <span className="account-label">Session Types: </span>
                                                         <span>
                                                             {sessionType.inPerson && "In-Person"}
@@ -423,7 +433,7 @@ function Account({navigate}){
                                                             {sessionType.coaching && "Coaching"}
                                                         </span>
                                                     </div>
-                                                    <div>
+                                                    <div className="info-item d-flex align-items-start">
                                                         <span className="account-label">Current Availability: </span>
                                                         <span>
                                                             {availability && availability.length > 0 ? (
@@ -441,7 +451,7 @@ function Account({navigate}){
                                     )}
                                 </Col>
 
-                                <Col xs={4} className="d-flex justify-content-end align-items-start">
+                                <Col xs={1} className="d-flex justify-content-end align-items-start">
                                 <Button 
                                 className="edit-button"
                                     variant="outline-primary" 
@@ -453,6 +463,7 @@ function Account({navigate}){
                                     {editMode ? "Cancel" : "Edit"}
                                 </Button>
                                 {editMode ? (<Button onClick={() => handleUpdate()}>Save</Button>) : null}
+                                {editMode && <Button onClick={handleDelete} variant="outline-secondary" size="sm" className="mt-4 delete-account-button">Delete Account</Button>}
                                 </Col>
                             </Row>
                         </Card.Body>
