@@ -1,9 +1,8 @@
 import React from "react"
 import {NavLink} from "react-router-dom"
-import {useState, useEffect, useContext} from "react"
+import { useContext} from "react"
 import {UserContext} from "../UserProvider"
-import Container from 'react-bootstrap/Container';
-import { Button, Navbar, Nav, Dropdown} from 'react-bootstrap';
+import { Navbar, Nav, Dropdown} from 'react-bootstrap';
 import "../Header.css"
 
 

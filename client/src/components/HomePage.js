@@ -137,15 +137,15 @@ const handleBooking = (e) => {
 
                         <Dropdown.Menu className="custom-dropdown-menu">
                         <Dropdown.Item as="button" className="custom-dropdown-item">
-                            <input type="checkbox" id="virtual" value="Virtual" />
+                            <input type="checkbox" id="virtual" value="Virtual" onChange={() => setSessionTypeFilter({...sessionTypeFilter, virtual: !sessionTypeFilter.virtual})}/>
                             <label htmlFor="virtual"> Virtual</label>
                         </Dropdown.Item>
                         <Dropdown.Item as="button" className="custom-dropdown-item">
-                            <input type="checkbox" id="in-person" value="In-Person" />
+                            <input type="checkbox" id="in-person" value="In-Person" onChange={() => setSessionTypeFilter({...sessionTypeFilter, inPerson: !sessionTypeFilter.inPerson})}/>
                             <label htmlFor="in-person"> In-Person</label>
                         </Dropdown.Item>
                         <Dropdown.Item as="button" className="custom-dropdown-item">
-                            <input type="checkbox" id="coaching" value="Coaching" />
+                            <input type="checkbox" id="coaching" value="Coaching" onChange={() => setSessionTypeFilter({...sessionTypeFilter, coaching: !sessionTypeFilter.coaching})}/>
                             <label htmlFor="coaching"> Coaching</label>
                         </Dropdown.Item>
                         </Dropdown.Menu>
