@@ -9,7 +9,7 @@ import "../Calendar.css"
 import moment from 'moment'
 
 
-function Sessions({navigate}){
+function Sessions(){
     const [sessions, setSessions] = useState([])
     const [selectedInfo, setSelectedInfo] = useState(null)
     const [showInfo, setShowInfo] = useState(false)
@@ -145,8 +145,6 @@ function Sessions({navigate}){
             notes: selectedInfo?.extendedProps.notes,
             
         }
-        console.log("Selected Info:", selectedInfo);
-        console.log("Session Data:", sessionData);
 
         fetch('/sessions', {
             method: 'POST',
@@ -157,9 +155,10 @@ function Sessions({navigate}){
         })
         .then(r => r.json())
         .then(newSession => {
-            console.log("New Session Response:", newSession)
+
             if (newSession) {
                 const requestId = selectedInfo.id
+            
                 fetch(`/requests/${requestId}`, {
                     method: 'PATCH',
                     headers: {
@@ -169,13 +168,35 @@ function Sessions({navigate}){
                 })
                 .then(r => r.json())
                 .then(updatedRequest => {
+
                     if(updatedRequest) {
-                        const updatedSessions = sessions.filter(session => session.id !== requestId)
-                        const newSession = {
-                            id: updatedRequest.newSessionId,
+
+                        const updatedSessions = sessions.filter(session => String(session.id) !== String(requestId));
+
+
+                        const isActor = newSession.actor_id === user?.id
+                        const newSessionEvent = {
+                            id: newSession.id, 
+                            title: isActor ? `Acting Session With'${newSession.reader.username}` : `Reading Session For ${newSession.actor.username}`,
+                            start: new Date(newSession.date + 'T' + newSession.start_time),
+                            end: new Date(newSession.date + 'T' + newSession.end_time),
+                            extendedProps: {
+                                notes: newSession.notes,
+                                photo: isActor ? newSession.reader.profile_image : newSession.actor.profile_image,
+                                name: isActor ? newSession.reader.username : newSession.actor.username,
+                                session_type: newSession.session_type,
+                                reader_name: isActor ? newSession.actor.username : newSession.reader.username, 
+                                type: isActor ? 'session_actor' : 'session_reader',
+                                status: 'scheduled',
+                                actor_id: newSession.actor_id,
+                                reader_id: newSession.reader_id,
+                            },
+                            color: isActor ? '#BFD5A5' : '#A5C2F7'
                         }
-                            updatedSessions.push(newSession)
+                            updatedSessions.push(newSessionEvent)
+
                             setSessions(updatedSessions)
+                            setSelectedInfo(newSessionEvent)
                     }
                 })
             }
@@ -253,7 +274,8 @@ function Sessions({navigate}){
 
                                 <Card.Text>
                                     When:<br />
-                                    {selectedInfo?.startStr} - {selectedInfo?.endStr}
+                                    {selectedInfo?.start ? moment(selectedInfo?.start).format('MMMM Do YYYY, h:mm a') : selectedInfo?.startStr} - 
+                                    {selectedInfo?.end ? moment(selectedInfo?.end).format('h:mm a') : selectedInfo?.endStr}
                                 </Card.Text>
                                 <Card.Text>
                                     Type: <br />
@@ -263,8 +285,7 @@ function Sessions({navigate}){
                                     Additional Notes: <br />
                                     {selectedInfo?.extendedProps.notes}
                                 </Card.Text>
-                                {console.log("Debug Type:", selectedInfo?.extendedProps.type)}
-                                {console.log("Debug Status:", selectedInfo?.extendedProps.status)}
+                                
 
                                 {selectedInfo?.type === 'request_reader' && selectedInfo?.extendedProps.status === 'open' ? (
                                     <Button onClick={handleAcceptRequest}>Accept Reading</Button>
@@ -301,5 +322,3 @@ export default Sessions
 
 
 
-// session.actor_id === user?.id ? '#BFD5A5' : '#A5C2F7'
-//             const filteredSessions = sessions.filter((session) => session.actor_id === user?.id || session.reader_id === user?.id)

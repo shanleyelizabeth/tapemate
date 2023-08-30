@@ -81,7 +81,7 @@ class RequestsById(Resource):
 
         try:
             db.session.commit()
-            return make_response({'message': 'Request updated successfully'}, 200)
+            return make_response(request_record.to_custom_dict(), 200)
         except Exception as e:
             db.session.rollback()
             return make_response({'error': str(e)}, 500)
@@ -96,7 +96,7 @@ class Sessions(Resource):
         try:
             data = request.get_json()
             
-            print("Inside try block.")
+            
             date_str = data.get('date')
             start_time_str = data.get('start_time')
             end_time_str = data.get('end_time')
@@ -113,12 +113,12 @@ class Sessions(Resource):
                 end_time = end_time_obj,
                 session_type=data.get('session_type')
             )
-            print("About to add new session to database.")
+            
             db.session.add(new_session)
-            print("About to commit to database.")
+            
             db.session.commit()
-            print("Successfully added new session, returning response.")
-            return make_response(jsonify(new_session.to_dict(only=('actor_id', 'reader_id', 'date', 'start_time', 'end_time', 'notes', 'session_type','status'))), 200)
+            
+            return make_response(jsonify(new_session.to_custom_dict()), 200)
 
         except Exception as e:
             db.session.rollback()
@@ -198,8 +198,6 @@ class UserById(Resource):
         if not user:
             return make_response({'error': 'User not found'}, 400)
             
-        
-
         for attr in ['username', 'location', 'gender']:
             if attr in request.form:
                 setattr(user, attr, request.form[attr])
