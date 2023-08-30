@@ -36,7 +36,7 @@ function Sessions(){
             return `Pending Acting Request to ${item.reader_username}`;
         }
         if (item.type === 'request_reader') {
-            return `${item.actor_username} is requesting you as a Reader`;
+            return `${item.actor_username} is Requesting you as a Reader`;
         }
     }
 
@@ -51,7 +51,7 @@ function Sessions(){
             return 'grey'
         }
         if (item.type === 'request_reader') {
-            return 'red'
+            return '#D56F6F'
         }
     }
 
@@ -255,34 +255,37 @@ function Sessions(){
                 initialView="timeGridDay"
                 plugins={[dayGridPlugin, timeGridPlugin]}
                 ref={calendarRef}
-                slotMinTime="08:00:00"
-                slotMaxTime="21:30:00"
+                slotMinTime="07:00:00"
+                slotMaxTime="22:30:00"
+                slotDuration="00:30:00"
+                slotLabelInterval="01:00:00"
                 events={sessions}
                 style={{width: '100%'}}
                 allDaySlot={false}
+                
                 eventClick={handleEventClick}/>
                 
             </div>
             <div className="info-container">
             
-                <Card style={{width: '20rem'}}>
+                <Card style={{width: '30rem'}}>
                     {showInfo ? 
                         (<>
-                            <Card.Img variant="top" style={{height: '100px', width: '75px'}} src={selectedInfo?.extendedProps.photo} />
+                            
                             <Card.Body>
                                 <Card.Title> {selectedInfo?.title}</Card.Title>
-
+                                <Card.Img className="img-fluid" style={{maxWidth: '30%', margin: '0 auto'}} src={selectedInfo?.extendedProps.photo} />
                                 <Card.Text>
-                                    When:<br />
+                                    <span style={{fontWeight: 'bold'}}>When:</span><br />
                                     {selectedInfo?.start ? moment(selectedInfo?.start).format('MMMM Do YYYY, h:mm a') : selectedInfo?.startStr} - 
                                     {selectedInfo?.end ? moment(selectedInfo?.end).format('h:mm a') : selectedInfo?.endStr}
                                 </Card.Text>
                                 <Card.Text>
-                                    Type: <br />
+                                    <span style={{fontWeight: 'bold'}}>Type:</span> <br />
                                     {selectedInfo?.extendedProps.session_type}
                                 </Card.Text>
                                 <Card.Text>
-                                    Additional Notes: <br />
+                                    <span style={{fontWeight: 'bold'}}>Additional Notes:</span> <br />
                                     {selectedInfo?.extendedProps.notes}
                                 </Card.Text>
                                 

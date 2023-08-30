@@ -1,20 +1,26 @@
+
+
+
 .sessions-container {
     display: flex;
     height: 100vh; 
-    margin:30px;
+    margin:0 auto;
     width: 100%;
+
     
 }
 .calendar-container{
-    flex: 2 !important;
+    flex: 1.5 !important;
     flex-shrink: 0 !important;
     min-width: 50% !important;
     width: 50% !important;
     display: flex;
     flex-direction: column;
-
+    margin: auto;
+    margin-right: 4rem;
     align-items: center;
-    top: 0px
+    top: 0px;
+    height: 90vh
 }
 
 .calendar-container button{
@@ -28,14 +34,15 @@
 }
 
 .info-container {
-    flex: 1;
-    margin-right: 50px;
-    margin-top: 2rem;
+    flex: 1.5;
+    margin: auto;
+    margin-left: 2rem;
 
 }
 
 .info-container .card{
-    height: 400px;
+    margin-left: 1rem;
+    margin-right: auto;
     overflow-y: auto;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     display: flex;
@@ -50,7 +57,7 @@
     font-size: .65em !important;
     width: 75% !important; 
     margin: 0px !important; 
-    height: 80%;
+    height: 82%;
     border: solid white;
     background: white;
     border-radius: 8px;
@@ -62,6 +69,10 @@
 .fc a{
     text-decoration: none;
     color:rgba(10, 9, 9, 0.657)
+}
+
+.fc-timegrid-slot {
+    min-height: 50px !important; 
 }
 
 
@@ -76,12 +87,11 @@
     font-weight: bold;
     font-size: small;
     cursor: pointer;
+    line-height: 1;
     
 }
 
-/* .fc-day-today {
-    background-color: rgba(0, 122, 255, 0.1);
-} */
+
 
 :root {
     --fc-today-bg-color: aliceblue

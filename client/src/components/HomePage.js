@@ -1,8 +1,7 @@
 import UserCard from "./UserCard"
 import {useState, useEffect, } from "react"
-import { Col, Row, Modal, Form, Button } from 'react-bootstrap'
-import DatePicker from "react-datepicker"
-import 'react-datepicker/dist/react-datepicker.css'
+import { Col, Row, Modal, Form, Button, Dropdown } from 'react-bootstrap'
+import "../Home.css"
 
 
 
@@ -18,6 +17,7 @@ function HomePage(){
     const [showConfirmationModal, setShowConfirmationModal] = useState(false)
     const [genderFilter, setGenderFilter] = useState("")
     const [availabilityFilter, setAvailabilityFilter] = useState("")
+    const [sessionTypeFilter, setSessionTypeFilter] = useState({virtual: false, inPerson: false, coaching: false})
 
     useEffect(() => {
         fetch('/homepage_users')
@@ -31,8 +31,11 @@ function HomePage(){
     }
 
     const filteredUsers = users.filter(user => {
-        return (genderFilter === "" || user.gender.toLowerCase() === genderFilter.toLowerCase()) &&
-                (availabilityFilter === "" || user.availabilities.some(avail => avail.day_of_week.toLowerCase() === availabilityFilter.toLowerCase()));
+        return (genderFilter === "" || genderFilter === "All" || user.gender.toLowerCase() === genderFilter.toLowerCase()) &&
+                (availabilityFilter === "" || user.availabilities.some(avail => avail.day_of_week.toLowerCase() === availabilityFilter.toLowerCase())) &&
+                (!sessionTypeFilter.virtual || user.available_virtual) &&
+                (!sessionTypeFilter.inPerson || user.available_in_person) &&
+                (!sessionTypeFilter.coaching || user.available_coaching);
     })
 
     
@@ -95,32 +98,60 @@ const handleBooking = (e) => {
     return (
         <div>
             
-            <div>
-            <Form.Group controlId="genderSelect">
-                <Form.Label>Gender</Form.Label>
-                <Form.Select value={genderFilter} onChange={e => setGenderFilter(e.target.value)}>
-                <option value="All">All</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                </Form.Select>
-            </Form.Group>
+            <div className="filter-container">
+            
+                <Form.Group className="filters" controlId="genderSelect">
+                    <Form.Label >Gender</Form.Label>
+                    <Form.Select value={genderFilter} onChange={e => setGenderFilter(e.target.value)}>
+                    <option value="">All</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    </Form.Select>
+                </Form.Group>
 
-            <Form.Group controlId="availabilitySearch">
-                <Form.Label>Availability</Form.Label>
-                <Form.Select 
-                    value={availabilityFilter} 
-                    onChange={e => setAvailabilityFilter(e.target.value)}
-                >
-                    <option value="" disabled>Select a day...</option>
-                    <option value="Monday">Monday</option>
-                    <option value="Tuesday">Tuesday</option>
-                    <option value="Wednesday">Wednesday</option>
-                    <option value="Thursday">Thursday</option>
-                    <option value="Friday">Friday</option>
-                    <option value="Saturday">Saturday</option>
-                    <option value="Sunday">Sunday</option>
-                </Form.Select>
-            </Form.Group>
+                
+
+                <Form.Group className="filters" controlId="availabilitySearch">
+                    <Form.Label>Availability</Form.Label>
+                    <Form.Select 
+                        value={availabilityFilter} 
+                        onChange={e => setAvailabilityFilter(e.target.value)}
+                    >
+                        <option value="" disabled>Select a day...</option>
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                        <option value="Sunday">Sunday</option>
+                    </Form.Select>
+                </Form.Group>
+
+                <Form.Group className="filters-checks">
+                    <Form.Label>Session Type</Form.Label>
+                    <Dropdown>
+                        <Dropdown.Toggle variant="light" className="custom-dropdown-toggle" id="dropdown-basic">
+                        Choose Session Type...
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu className="custom-dropdown-menu">
+                        <Dropdown.Item as="button" className="custom-dropdown-item">
+                            <input type="checkbox" id="virtual" value="Virtual" />
+                            <label htmlFor="virtual"> Virtual</label>
+                        </Dropdown.Item>
+                        <Dropdown.Item as="button" className="custom-dropdown-item">
+                            <input type="checkbox" id="in-person" value="In-Person" />
+                            <label htmlFor="in-person"> In-Person</label>
+                        </Dropdown.Item>
+                        <Dropdown.Item as="button" className="custom-dropdown-item">
+                            <input type="checkbox" id="coaching" value="Coaching" />
+                            <label htmlFor="coaching"> Coaching</label>
+                        </Dropdown.Item>
+                        </Dropdown.Menu>
+                    </Dropdown>
+                </Form.Group>
+
             </div>
             <Row className="m-4">
             {userCards}

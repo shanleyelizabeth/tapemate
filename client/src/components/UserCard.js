@@ -82,16 +82,16 @@ function UserCard({ username, id, profile_image, availabilities, gender, locatio
                     <div className="card-content">
                         <Card.Title>{username} ({location})</Card.Title>
                         <Card.Img src={profile_image} className="img-fluid" style={{maxWidth: '30%', margin: '0 auto'}}/>
-                        <Card.Subtitle className="mb-2 text-muted">{gender}</Card.Subtitle>
-                        <Card.Text>Available for:  
-                            {in_person && 'In Person'}
+                        <Card.Subtitle className="gender mb-2 text-muted">{gender}</Card.Subtitle>
+                        <Card.Text >Available For: <br />
+                            {in_person && 'In-Person'}
                             {in_person && (virtual || coaching) && ", "}
                             {virtual && 'Virtual'} 
                             {virtual && coaching && ", "}
                             {coaching && 'Coaching'}
                         </Card.Text>
                         <Card.Subtitle className="mb-2 text-muted">
-                            Availability: {formatAvailability(availabilities)}
+                            Availability: <br />{formatAvailability(availabilities)}
                         </Card.Subtitle>
                         <Button onClick={handleClick}>Book {username}</Button>
                     </div>
