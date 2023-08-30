@@ -12,6 +12,7 @@
     display: flex;
     align-items: flex-start; 
     justify-content: flex-start;
+    margin-left:36px;
 }
 
 .custom-dropdown-toggle {

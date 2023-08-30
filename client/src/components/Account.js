@@ -239,7 +239,7 @@ function Account({navigate}){
                                                 <Form.Label>Gender</Form.Label>
                                                 <Form.Control as= "select" value={gender} onChange={e => setGender(e.target.value)}>
                                                     <option value="">Select a gender</option>
-                                                    <option value="">Prefer not to choose</option>
+                                                    <option value="Prefer not to choose">Prefer not to choose</option>
                                                     <option value="Male">Male</option>
                                                     <option value="Female">Female</option>
                                                 </Form.Control>
