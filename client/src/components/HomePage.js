@@ -212,7 +212,7 @@ const handleBooking = (e) => {
                             </Form.Group>
                             <Form.Group as={Row}>
                                 <Form.Label>Notes:</Form.Label>
-                                <Col sm="10">
+                                <Col sm="12">
                                     <Form.Control 
                                         as="textarea" 
                                         rows={3} 
@@ -226,7 +226,7 @@ const handleBooking = (e) => {
 
                     <Modal.Footer>
                         <Button variant="secondary" onClick={() => setShowModal(false)}>Close</Button>
-                        <Button variant="primary" onClick={handleBooking}>Book</Button>
+                        <Button variant="primary" className="book-button" onClick={handleBooking}>Book</Button>
                     </Modal.Footer>
                 </Modal>
             )}
