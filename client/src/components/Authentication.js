@@ -54,7 +54,6 @@ function Authentication({navigate}){
             navigate('home')
         })
         .catch ( error => {
-            console.log(error)
             setError(error.message || "An error occurred. Please try again.")
             setFormData({username:"", password: ""})
 
@@ -72,12 +71,12 @@ function Authentication({navigate}){
             </div>
             <img src={header2} alt="Logo"/>
             <p className="continue">To continue, please Login or Signup.</p>
-            {isLogin === 0 ?
             <div className="login-or-signup">
                 <Button  className="login-button" onClick={(e) => {setLogin(1)}}>Login</Button>
                 <Button  className="signup-button" onClick={(e) => {setLogin(2)}}>Signup</Button>
             </div>
-            :
+            {isLogin !== 0 &&
+            
             <div className="login-form-div">
                 <Form className="login-signup-form" onSubmit = {handleSubmit}>
                     <Form.Group controlId="username">
