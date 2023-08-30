@@ -1,0 +1,38 @@
+
+
+.checkbox-container {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
+
+
+.filter-container {
+    display: flex;
+    align-items: flex-start; 
+    justify-content: flex-start;
+}
+
+.custom-dropdown-toggle {
+    border-color: #dee2e6;
+    color: #212529;
+    width: 100%;
+    padding: 0.375rem 2.25rem 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5
+}
+
+.custom-dropdown-menu {
+    width: 100%;
+}
+
+.custom-dropdown-item {
+    display: flex;
+    align-items: center;
+}
+
+.custom-dropdown-item input[type="checkbox"] {
+    margin-right: 10px;
+}

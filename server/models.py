@@ -10,8 +10,15 @@ class User(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, nullable=False, unique=True)
     _password_hash= db.Column(db.String)
-    location = db.Column(db.String)
+    location = db.Column(db.String) 
     profile_image = db.Column(db.String, default=None)
+    is_available_as_reader = db.Column(db.Boolean, default=True)
+    gender = db.Column(db.String, nullable=True)
+    available_in_person = db.Column(db.Boolean, default = False)
+    available_virtual = db.Column(db.Boolean, default = False)
+    available_coaching = db.Column(db.Boolean, default=False)
+
+
 
     @property
     def password_hash(self):
@@ -34,9 +41,47 @@ class User(db.Model, SerializerMixin):
     actor_requests = db.relationship('Request', cascade='all, delete-orphan', back_populates='actor', foreign_keys='Request.actor_id')
     reader_requests = db.relationship('Request', cascade='all, delete-orphan', back_populates='reader', foreign_keys='Request.reader_id')
 
+    availabilities = db.relationship('Availability', back_populates='user')
+
+    def to_custom_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'location': self.location,
+            'profile_image': self.profile_image,
+            'is_available_as_reader': self.is_available_as_reader,
+            'gender': self.gender,
+            'available_in_person': self.available_in_person,
+            'available_virtual': self.available_virtual,
+            'available_coaching': self.available_coaching,
+            
+    }
+
 
     def __repr__(self):
         return f'User {self.username}, ID {self.id}'
+    
+class Availability(db.Model, SerializerMixin):
+    __tablename__ = 'availabilities'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    day_of_week = db.Column(db.String)
+    start_time = db.Column(db.String)
+    end_time = db.Column(db.String)
+
+    user = db.relationship('User', back_populates='availabilities')
+
+    def to_custom_dict(self):
+        return {
+            'id': self.id,
+            'day_of_week': self.day_of_week,
+            'start_time': self.start_time,
+            'end_time': self.end_time,
+    }
+
+    def __repr__(self):
+        return f"Availability(id={self.id}, user_id={self.user_id}, start_time={self.start_time}, end_time={self.end_time})"
     
 class Request(db.Model, SerializerMixin):
     __tablename__ = 'requests'
@@ -67,6 +112,7 @@ class Request(db.Model, SerializerMixin):
         return {
             'id': self.id,
             'actor_id': self.actor_id,
+            'reader_id': self.reader_id,
             'notes': self.notes,
             'date': self.date.strftime('%Y-%m-%d'),  
             'start_time': self.start_time.strftime('%H:%M:%S'),
@@ -75,7 +121,10 @@ class Request(db.Model, SerializerMixin):
             'session_type': self.session_type,
             'actor_username': self.actor.username if self.actor else None,
             'actor_profile_image': self.actor.profile_image if self.actor else None,
-            'actor_location': self.actor.location if self.actor else None
+            'actor_location': self.actor.location if self.actor else None,
+            'reader_username': self.reader.username if self.reader else None,  # Add this line
+            'reader_profile_image': self.reader.profile_image if self.reader else None,  # Add this line
+            'reader_location': self.reader.location if self.reader else None
         }
 
 

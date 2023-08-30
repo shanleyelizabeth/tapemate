@@ -1,13 +1,15 @@
-User Name, Password, Location, Image Path
-Spencer,password,"Nashville, TN", http://localhost:5555/static/user_images/SpencerLocke.jpg
-Kelsey,password,"Brooklyn, NY", http://localhost:5555/static/user_images/kelsey.jpeg
-Shanley,password,"Brooklyn, NY", http://localhost:5555/static/user_images/shanley.jpg
-Abraham,password,"New York, NY", http://localhost:5555/static/user_images/AbrahamLim.jpg
-Logan,password,"Los Angeles, CA", http://localhost:5555/static/user_images/LoganClark.jpg
-Ash,password,"Salt Lake City, UT", http://localhost:5555/static/user_images/AshSantos.jpg
-Catherine,password,"Brooklyn, NY", http://localhost:5555/static/user_images/CatherineBeckett.jpeg
-Emma,password,"Los Angeles, CA", http://localhost:5555/static/user_images/EmmaGonzalez.jpg
-Savannah,password,"Brooklyn, NY", http://localhost:5555/static/user_images/Savannah.jpg
-Natalee,password,"Los Angeles, CA", http://localhost:5555/static/user_images/Natalee.jpg
-Olivia,password,"New York, NY", http://localhost:5555/static/user_images/Olivia.jpg
-Kevin,password,"Northern CA",http://localhost:5555/static/user_images/KevinRahm.jpg
+User Name,Password,Location,Image Path,Reader,Gender,In-Person,Virtual,Coaching
+Spencer,password,"Nashville, TN", http://localhost:5555/static/user_images/SpencerLocke.jpg,True,Female,False,True,True
+Kelsey,password,"Brooklyn, NY", http://localhost:5555/static/user_images/kelsey.jpeg,True,Female,True,False,False
+Shanley,password,"Brooklyn, NY", http://localhost:5555/static/user_images/shanley.jpg,True,Female,False,True,False
+Abraham,password,"New York, NY", http://localhost:5555/static/user_images/AbrahamLim.jpg,True,Male,True,True,True
+Logan,password,"Los Angeles, CA", http://localhost:5555/static/user_images/LoganClark.jpg,True,Male,True,True,False
+Ash,password,"Salt Lake City, UT", http://localhost:5555/static/user_images/AshSantos.jpg,True,Female,True,True,True
+Catherine,password,"Brooklyn, NY", http://localhost:5555/static/user_images/CatherineBeckett.jpeg,True,Female,True,True,False
+Emma,password,"Los Angeles, CA", http://localhost:5555/static/user_images/EmmaGonzalez.jpg,True,Female,False,True,True
+Savannah,password,"Brooklyn, NY", http://localhost:5555/static/user_images/Savannah.jpg,True,Female,False,True,False
+Natalee,password,"Los Angeles, CA", http://localhost:5555/static/user_images/Natalee.jpg,True,Female,True,True,True
+Olivia,password,"New York, NY", http://localhost:5555/static/user_images/Olivia.jpg,True,Female,True,True,False
+Kevin,password,"Northern CA",http://localhost:5555/static/user_images/KevinRahm.jpg,True,Male,False,True,True
+Chris,password,"Nashville, TN",http://localhost:5555/static/user_images/ChrisMason.jpg,True,Male,False,True,True
+Mark,password,"Los Angeles, CA",http://localhost:5555/static/user_images/MarkHapka.jpg,True,Male,True,True,True

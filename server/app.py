@@ -4,9 +4,11 @@ from flask_restful import Resource
 from flask import request, make_response, session
 from datetime import datetime
 from werkzeug.utils import secure_filename
+from flask import jsonify
 import os
+from sqlalchemy import or_, and_
 
-from models import User, Session, Request
+from models import User, Session, Request, Availability
 
 from config import app, db, api, upload_folder, allowed_extensions
 
@@ -14,6 +16,9 @@ app.config['upload_folder'] = upload_folder
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
+
+def str_to_bool(s):
+    return s.lower() == 'true'
 
 @app.route('/')
 def index():
@@ -29,6 +34,7 @@ class Requests(Resource):
         data = request.get_json()
         
         actor_id = session.get("user_id", None)
+        
 
         if not actor_id:
             return make_response({'error': 'Unauthorized user or Session expired'}, 401)
@@ -42,13 +48,14 @@ class Requests(Resource):
         start_time_str = data['start_time']
         end_time_str = data['end_time']
 
-        date_obj = datetime.strptime(date_str, "%B %d, %Y").date()
+        date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
         start_time_obj = datetime.strptime(start_time_str, "%H:%M").time()
         end_time_obj = datetime.strptime(end_time_str, "%H:%M").time()
 
         try:
             new_request = Request(
                 actor_id=session['user_id'],
+                reader_id=data.get("reader_id", None),
                 notes=data.get('notes', None),
                 date=date_obj,
                 start_time=start_time_obj,
@@ -60,6 +67,25 @@ class Requests(Resource):
             return make_response(new_request.to_dict(only=('actor_id', 'notes', 'date', 'start_time', 'end_time', 'session_type')), 201)
         except Exception as e:
             return make_response({"error" : str(e)}, 500)
+        
+class RequestsById(Resource):
+    def patch(self, id):
+        request_record = Request.query.filter_by(id=id).first()
+        if not request_record:
+            return make_response({'error': 'Request not found'}, 400 )
+
+        data = request.get_json()
+
+        if 'status' in data:
+            request_record.status = data['status']
+
+        try:
+            db.session.commit()
+            return make_response(request_record.to_custom_dict(), 200)
+        except Exception as e:
+            db.session.rollback()
+            return make_response({'error': str(e)}, 500)
+
 
 class Sessions(Resource):
     def get(self):
@@ -67,25 +93,18 @@ class Sessions(Resource):
         return make_response(sessions, 200)
     
     def post(self):
-        data = request.get_json()
-
-        date_str = data.get('date')
-        start_time_str = data.get('start_time')
-        end_time_str = data.get('end_time')
-        
-
-        date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
-        start_time_obj = datetime.strptime(start_time_str, "%H:%M:%S").time()
-        end_time_obj = datetime.strptime(end_time_str, "%H:%M:%S").time()
-
-
         try:
-            request_id = data.get('request_id')
-            request_to_update = Request.query.filter_by(id=request_id).first()
-            if not request_to_update:
-                return make_response({"error": "Request not found"})
-            request_to_update.status = 'Accepted'
+            data = request.get_json()
+            
+            
+            date_str = data.get('date')
+            start_time_str = data.get('start_time')
+            end_time_str = data.get('end_time')
+            date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
+            start_time_obj = datetime.strptime(start_time_str, "%H:%M:%S").time()
+            end_time_obj = datetime.strptime(end_time_str, "%H:%M:%S").time()
 
+            
             new_session = Session(
                 actor_id = data.get('actor_id'),
                 reader_id = data.get('reader_id'),
@@ -94,12 +113,17 @@ class Sessions(Resource):
                 end_time = end_time_obj,
                 session_type=data.get('session_type')
             )
+            
             db.session.add(new_session)
+            
             db.session.commit()
-            return make_response(new_session.to_dict(only=('actor_id', 'reader_id', 'date', 'start_time', 'end_time', 'notes', 'session_type','status')))
+            
+            return make_response(jsonify(new_session.to_custom_dict()), 200)
+
         except Exception as e:
             db.session.rollback()
-            return make_response({"error" : str(e)}, 500)
+            print("Exception:", e)  # For debugging
+            return make_response(jsonify({"error": str(e)}), 500)
 
 class SessionById(Resource):
     def patch(self, id):
@@ -117,9 +141,48 @@ class SessionById(Resource):
         db.session.commit()
         return make_response(session.to_dict(only=('notes',)), 200)
 
+class Availabilities(Resource):
+    def post(self):
+        data = request.get_json()
+        print(data)
+        try:
+            new_availability = Availability(
+                user_id=data['user_id'],
+                day_of_week=data['day_of_week'],
+                start_time=data['start_time'],
+                end_time=data['end_time']
+            )
+            db.session.add(new_availability)
+            db.session.commit()
+            print(new_availability.to_custom_dict())
+            return make_response(new_availability.to_custom_dict())
+        except Exception as e:
+            return make_response({"error": {str(e)}}, 500)
 
+
+class AvailabilityById(Resource):
+    def delete(self, id):
+        availability = Availability.query.filter_by(id=id).first()
+        if not availability:
+            return make_response({'error': 'User not found'}, 400)
+        
+        db.session.delete(availability)
+        db.session.commit()
+        return make_response({'message':'Delete successful'}, 204)
 
 class UserById(Resource):
+    def get(self, id):
+
+        user = User.query.filter_by(id=id).first()
+        if not user:
+            return make_response({'error': 'User not found'}, 400)
+        
+        user_dict = user.to_custom_dict()
+        
+        user_dict['availabilities'] = [a.to_custom_dict() for a in user.availabilities]
+
+        return make_response(user_dict, 200)
+    
     def delete(self,id):
         user = User.query.filter_by(id=id).first()
         if not user:
@@ -128,19 +191,28 @@ class UserById(Resource):
         db.session.commit()
         return make_response({'message':'Delete successful'}, 204)
     
+
+    
     def patch(self, id):
         user = User.query.filter_by(id=id).first()
         if not user:
             return make_response({'error': 'User not found'}, 400)
             
-        
-
-        for attr in ['username', 'location']:
+        for attr in ['username', 'location', 'gender']:
             if attr in request.form:
                 setattr(user, attr, request.form[attr])
 
         if 'password' in request.form:
             user.password_hash = request.form['password']
+
+        for session_type in ['available_in_person', 'available_virtual', 'available_coaching']:
+            if session_type in request.form:
+                value = str_to_bool(request.form[session_type])
+                setattr(user, session_type, value)
+
+        if 'is_available_as_reader' in request.form:
+            is_available_as_reader_value = str_to_bool(request.form['is_available_as_reader'])  
+            user.is_available_as_reader = is_available_as_reader_value
 
         if 'profile_image' in request.files:
             file = request.files['profile_image']
@@ -151,13 +223,70 @@ class UserById(Resource):
                 user.profile_image = filepath
 
         db.session.commit()
-        return make_response(user.to_dict(only=('username', 'id', 'profile_image', 'location')), 200)
+        return make_response(user.to_dict(only=('username', 'id', 'profile_image', 'location', 'gender', 'is_available_as_reader', 'available_in_person', 'available_virtual', 'available_coaching')), 200)
+
+@app.route('/homepage_users', methods=['GET'])
+def get_homepage_users():
+    try:
+        current_user_id = session.get("user_id", None)
+
+        if not current_user_id:
+            return make_response({'error': 'Unauthorized user or Session expired'}, 401)
+        
+        users = db.session.query(User).join(Availability, User.id == Availability.user_id).filter(User.id != current_user_id, 
+                    User.is_available_as_reader == True, 
+                    Availability.user_id.isnot(None)).all()
+
+        user_dicts =[]
+        for user in users:
+            user_dict = user.to_custom_dict()
+            user_dict['availabilities'] = [a.to_custom_dict() for a in user.availabilities]
+            user_dicts.append(user_dict)
+
+
+
+        return make_response(user_dicts, 200)
+    except Exception as e:
+        return make_response({"error": str(e)}, 500)
+    
+@app.route('/sessions_requests', methods=['GET'])
+def get_sessions_requests():
+    try:
+        current_user_id = session.get("user_id", None)
+
+        if not current_user_id:
+            return make_response({'error': 'Unauthorized user or Session expired'}, 401)
+        
+        sessions = Session.query.filter(
+            or_(Session.actor_id == current_user_id, Session.reader_id == current_user_id)).all()
+
+        requests = Request.query.filter(
+            and_(
+                or_(Request.actor_id == current_user_id, Request.reader_id == current_user_id),
+                Request.status == "open")
+            ).all()
+        
+        session_dicts = [s.to_custom_dict() for s in sessions]
+        request_dicts = [r.to_custom_dict() for r in requests]
+
+        for s in session_dicts:
+            s['type'] = 'session_actor' if s['actor_id'] == current_user_id else 'session_reader'
+
+        for r in request_dicts:
+            r['type'] = 'request_actor' if r['actor_id'] == current_user_id else 'request_reader'
+
+        sessions_requests = session_dicts + request_dicts
+
+        return make_response({'data': sessions_requests}, 200)
+    except Exception as e:
+        return make_response({"error": str(e)}, 500)
+        
 
 @app.route('/authorized', methods=["GET"])
 def authorized():
     try:
         user = User.query.filter_by(id=session.get("user_id")).first()
-        return make_response( user.to_dict(only=('username','id', 'profile_image', 'location')), 200)
+        return make_response( user.to_dict(only=('username','id', 'profile_image', 'location', 'gender')), 200)
     except:
         return make_response({"error": "Please log in or sign up"}, 401)
 
@@ -170,7 +299,7 @@ def login():
     if user.authenticate(data["password"]):
         session["user_id"] = user.id
         print(session["user_id"])
-        return make_response(user.to_dict(only=('username', 'id', 'profile_image', 'location'))), 201
+        return make_response(user.to_dict(only=('username', 'id', 'profile_image', 'location', 'gender'))), 201
     else:
         return make_response({"error": "Incorrect password"}, 400)
     
@@ -213,8 +342,11 @@ def logout():
     
 api.add_resource(UserById,'/users/<int:id>')
 api.add_resource(Requests, '/requests')
+api.add_resource(RequestsById, '/requests/<int:id>')
 api.add_resource(Sessions, '/sessions')
 api.add_resource(SessionById, '/sessions/<int:id>')
+api.add_resource(Availabilities, '/availabilities')
+api.add_resource(AvailabilityById, '/availabilities/<int:id>')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

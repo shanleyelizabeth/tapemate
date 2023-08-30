@@ -86,9 +86,6 @@ function Header({navigate}){
                 </Nav>
             </Navbar.Collapse>
             <div className = "right-nav">
-                <Button variant="primary">
-                    <NavLink className = "new-request-link" to="request-form">+ New Reading Request</NavLink>
-                </Button>
                 <Dropdown>
                     <Dropdown.Toggle as={CustomToggle}/>
                     <Dropdown.Menu className="dropdown-menu" align="end">
