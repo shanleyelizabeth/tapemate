@@ -31,6 +31,6 @@ To get started with Tapemate:
 7 - Run `python seed.py` to seed the database with initial data  
 
 📬 Contact Information
-Author: Shanley Elizabeth
-Email: shanleydev@gmail.com
+Author: Shanley Elizabeth   
+Email: shanleydev@gmail.com  
 LinkedIn: https://www.linkedin.com/in/shanley-e-02785b124/
