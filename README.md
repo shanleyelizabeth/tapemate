@@ -30,7 +30,9 @@ To get started with Tapemate:
 6 - Run `flask db upgrade` to apply the database migrations and set up the schema  
 7 - Run `python seed.py` to seed the database with initial data  
 
-📬 Contact Information
-Author: Shanley Elizabeth   
-Email: shanleydev@gmail.com  
-LinkedIn: https://www.linkedin.com/in/shanley-e-02785b124/
+### 📬 **Contact Information**
+Author: Shanley Elizabeth  
+
+Email: [shanleydev@gmail.com](mailto:shanleydev@gmail.com)  
+
+LinkedIn: [Shanley Elizabeth](https://www.linkedin.com/in/shanley-e-02785b124/)  
